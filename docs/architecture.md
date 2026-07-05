@@ -1,9 +1,10 @@
 # Architecture
 
-> Status: Phase 2. Bronze ingestion, local medallion storage, DuckDB catalog views, the
-> quality gate (bronze→silver with quarantine), PSI drift detection, ground-truth gate
-> scoring, and the offline smoke path are shipped. Sections for unbuilt subsystems are design
-> intent, not documentation of shipped code; see [roadmap.md](roadmap.md) for phase status.
+> Status: Phase 3. Bronze ingestion, medallion storage, DuckDB catalog views, the quality
+> gate (bronze→silver with quarantine), PSI drift detection, exact + MinHash/LSH dedup, and
+> ground-truth scoring of both stages are shipped, all exercised by the offline smoke path.
+> Sections for unbuilt subsystems are design intent, not documentation of shipped code; see
+> [roadmap.md](roadmap.md) for phase status.
 
 ## System overview
 
@@ -81,7 +82,7 @@ flowchart LR
 | `crucible.storage` | 1 | Medallion layers, Parquet/Arrow IO, DuckDB catalog |
 | `crucible.quality` | 2 | Validation rules, promotion gate, quarantine, PSI drift (shipped) |
 | `crucible.assay` (scoring) | 2 | Ground-truth scoring of pipeline stages (shipped; full harness in 8) |
-| `crucible.dedup` | 3 | Exact + MinHash/LSH near-dup removal |
+| `crucible.dedup` | 3 | Exact + MinHash/LSH near-dup removal (shipped) |
 | `crucible.versioning` | 4 | Manifests, snapshots, lineage graph |
 | `crucible.features` | 5 | Offline feature store, PIT joins, leakage guards |
 | `crucible.shards` | 6 | Tokenization, deterministic sharding, resumable iteration |

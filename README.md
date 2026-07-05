@@ -33,19 +33,20 @@ refinement, and the `assay` experiment harness measures the purity of what comes
 
 ## Status
 
-**Phase 2 of 8** - bronze ingestion and the quality gate are shipped. The CLI can generate
-synthetic data, land batch or in-memory-streamed sources into bronze Parquet parts, promote
-them through a validating gate into silver (failures land in quarantine with reasons), detect
-distribution drift, and score the gate's decisions against planted ground truth — measured on
-the smoke corpus: **precision 1.0, recall 1.0** across all planted junk and PII kinds. The
-roadmap below is honest about what exists versus what is planned.
+**Phase 3 of 8** - ingestion, the quality gate, and deduplication are shipped. The pipeline
+runs synthetic data → bronze (batch or streamed) → quality gate → silver + quarantine →
+exact + MinHash/LSH dedup, with every stage scored against planted ground truth. Measured on
+the smoke corpus: gate **precision 1.0 / recall 1.0**; dedup **exact-dup recall 1.0**,
+near-dup recall 0.7, F1 0.79 at the default threshold (full tradeoff curve in
+[docs/dedup.md](docs/dedup.md)). The roadmap below is honest about what exists versus what
+is planned.
 
 | Phase | Subsystem | Status |
 |---|---|---|
 | 0 | Scaffold, CI, CLI, synthetic corpus generator | done |
 | 1 | Batch + streaming ingestion to bronze, local catalog, DuckDB SQL, smoke through bronze | done |
 | 2 | Quality gates, quarantine, drift detection, measured gate scoring, reports | done |
-| 3 | Exact + MinHash/LSH deduplication with measured rates | planned |
+| 3 | Exact + MinHash/LSH deduplication with measured precision/recall and threshold sweep | done |
 | 4 | Content-addressed versioning, manifests, lineage graph | planned |
 | 5 | Feature layer with point-in-time joins + leakage guards | planned |
 | 6 | Training-shard builder + DDP/FSDP reference trainer | planned |
@@ -94,6 +95,15 @@ the gate's decisions against the planted ground truth — the one command allowe
 .venv/bin/crucible promote --dataset synth          # bronze -> silver + quarantine + report
 .venv/bin/crucible score-gate --dataset synth       # measured precision/recall vs ground truth
 .venv/bin/crucible sql "SELECT reject_reasons, count(*) FROM quarantine_synth GROUP BY 1"
+```
+
+Then deduplicate silver (exact + MinHash/LSH near-dups) and reproduce the threshold
+tradeoff curve:
+
+```bash
+.venv/bin/crucible score-dedup --dataset synth --sweep 0.4,0.5,0.6   # pre-dedup sweep
+.venv/bin/crucible dedup --dataset synth                             # earliest record kept
+.venv/bin/crucible score-dedup --dataset synth                       # measured P/R/F1
 ```
 
 ## Design principles

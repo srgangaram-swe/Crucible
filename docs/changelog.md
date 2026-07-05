@@ -2,6 +2,32 @@
 
 Format follows [Keep a Changelog](https://keepachangelog.com/); versions follow SemVer.
 
+## [0.4.0] - 2026-07-05 — Phase 3: deduplication
+
+### Added
+
+- `crucible.dedup`: exact dedup (normalized-text hashing) + from-scratch
+  seed-deterministic MinHash/banded-LSH near-dup detection with
+  exact-Jaccard verification and union-find clustering; earliest record
+  (smallest id) kept per cluster; datasketch as a config-switchable backend
+  pinned to the same LSH banding (`dedup` extra, in dev deps so tested).
+- `crucible.assay`: dedup scoring vs planted `gt_dup_of` including
+  `fp_unlabeled_exact` (accidental template collisions counted, not
+  forgiven) and a threshold sweep. Measured at threshold 0.5: exact recall
+  1.0, near recall 0.7, precision 0.78, F1 0.79; precision 1.0 at 0.6.
+- `Catalog.replace_dataset`: shared content-addressed rewriting of derived
+  layers (bronze refuses); gate and dedup both use it.
+- CLI: `crucible dedup`, `crucible score-dedup [--sweep]`;
+  `configs/dedup_default.yaml`; smoke stage 9 with measured assertions;
+  docs/dedup.md with the full measured tradeoff table.
+
+### Fixed
+
+- Cluster survivors are chosen by stable id order, not row position —
+  content-hash part names make `Catalog.read` order arbitrary, which made
+  naive keep-first keep copies instead of originals (caught by measurement:
+  exact-dup recall was 0.75 before, 1.0 after).
+
 ## [0.3.0] - 2026-07-05 — Phase 2: quality gates
 
 ### Added

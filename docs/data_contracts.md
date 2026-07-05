@@ -96,8 +96,13 @@ rule. It is a **derived, rebuildable** layer:
 - If the reject rate exceeds `max_reject_rate`, **nothing** is promoted and the
   verdict is `blocked` — a systematically broken source fails loudly rather
   than leaking a plausible-looking silver dataset.
-- Deduplication is not silver's concern yet; it arrives in Phase 3 and will
-  narrow this contract (silver = validated **and deduplicated**).
+- After `crucible dedup`, silver is also deduplicated: exact duplicates
+  (normalized-text hash) and verified near-duplicates (MinHash/LSH, Jaccard ≥
+  threshold) are removed, keeping the smallest-id record per cluster. Dedup
+  is likewise a pure function of (its input, config); the removed ids are
+  recorded in `reports/dedup/<dataset>.json`. Pipeline order matters:
+  promote, then dedup (re-promoting resurrects duplicates until the Phase 7
+  DAG encodes the ordering).
 
 ## Quarantine
 
