@@ -53,7 +53,7 @@ dev = [
 crucible = "crucible.cli:main"
 
 [project.urls]
-Repository = "https://github.com/srgangaram/crucible"
+Repository = "https://github.com/srgangaram-swe/Crucible"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/crucible"]

@@ -2,7 +2,7 @@
 
 *A local-first data refinery and data-centric research platform for distributed training.*
 
-[![CI](https://github.com/srgangaram/crucible/actions/workflows/ci.yml/badge.svg)](https://github.com/srgangaram/crucible/actions/workflows/ci.yml)
+[![CI](https://github.com/srgangaram-swe/Crucible/actions/workflows/ci.yml/badge.svg)](https://github.com/srgangaram-swe/Crucible/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](pyproject.toml)
 
@@ -51,7 +51,7 @@ below is honest about what exists versus what is planned.
 ## Quickstart
 
 ```bash
-git clone https://github.com/srgangaram/crucible && cd crucible
+git clone https://github.com/srgangaram-swe/Crucible && cd Crucible
 make install          # creates .venv and installs crucible + dev tools
 make smoke            # end-to-end offline check (~seconds on CPU)
 make test lint type   # full quality gate
