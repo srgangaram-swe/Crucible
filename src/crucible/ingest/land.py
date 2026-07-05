@@ -33,8 +33,7 @@ from pydantic import BaseModel, Field
 
 from crucible import __version__
 from crucible.ingest.sources import Source
-from crucible.storage import Catalog, Layer
-from crucible.utils.hashing import canonical_json, sha256_texts
+from crucible.storage import Catalog, Layer, table_content_hash
 
 _LOG_NAME = "_ingest_log.jsonl"
 
@@ -70,7 +69,7 @@ class IngestResult:
 
 def batch_hash(table: pa.Table) -> str:
     """Order-sensitive content hash of a batch's canonical rows."""
-    return sha256_texts(canonical_json(row, default=str) for row in table.to_pylist())
+    return table_content_hash(table)
 
 
 def _log_path(catalog: Catalog, dataset: str) -> Path:

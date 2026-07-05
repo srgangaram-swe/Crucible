@@ -14,7 +14,6 @@ instead of leaking a plausible-looking silver dataset.
 
 from __future__ import annotations
 
-import shutil
 import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
@@ -23,7 +22,6 @@ from typing import Any
 import pyarrow as pa
 from pydantic import BaseModel, Field, field_validator
 
-from crucible.ingest.land import batch_hash
 from crucible.quality.rules import RULES, evaluate_text
 from crucible.storage import Catalog, Layer
 
@@ -76,21 +74,6 @@ class GateResult:
 
     def as_dict(self) -> dict[str, Any]:
         return asdict(self)
-
-
-def _clear_dataset(catalog: Catalog, layer: Layer, dataset: str) -> None:
-    directory = catalog.dataset_dir(layer, dataset)
-    if directory.exists():
-        shutil.rmtree(directory)
-
-
-def _write_parts(catalog: Catalog, layer: Layer, dataset: str, table: pa.Table, rows: int) -> int:
-    parts = 0
-    for start in range(0, table.num_rows, rows):
-        chunk = table.slice(start, rows)
-        catalog.write_part(chunk, layer, dataset, f"part-{batch_hash(chunk)[:16]}")
-        parts += 1
-    return parts
 
 
 def run_gate(
@@ -147,23 +130,19 @@ def run_gate(
     promote_indices = [i for i, bad in enumerate(quarantine_mask) if not bad]
     quarantine_indices = [i for i, bad in enumerate(quarantine_mask) if bad]
 
-    _clear_dataset(catalog, Layer.SILVER, dataset)
-    _clear_dataset(catalog, Layer.QUARANTINE, dataset)
-
-    silver_parts = 0
-    if promote_indices:
-        silver_table = table.take(promote_indices)
-        silver_parts = _write_parts(catalog, Layer.SILVER, dataset, silver_table, cfg.part_rows)
-
-    quarantine_parts = 0
-    if quarantine_indices:
-        quarantine_table = table.take(quarantine_indices).append_column(
-            "reject_reasons",
-            pa.array(["|".join(reasons_per_row[i]) for i in quarantine_indices]),
-        )
-        quarantine_parts = _write_parts(
-            catalog, Layer.QUARANTINE, dataset, quarantine_table, cfg.part_rows
-        )
+    silver_parts = catalog.replace_dataset(
+        table.take(promote_indices) if promote_indices else table.slice(0, 0),
+        Layer.SILVER,
+        dataset,
+        cfg.part_rows,
+    )
+    quarantine_table = table.take(quarantine_indices).append_column(
+        "reject_reasons",
+        pa.array(["|".join(reasons_per_row[i]) for i in quarantine_indices], type=pa.string()),
+    )
+    quarantine_parts = catalog.replace_dataset(
+        quarantine_table, Layer.QUARANTINE, dataset, cfg.part_rows
+    )
 
     return GateResult(
         dataset=dataset,
