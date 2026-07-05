@@ -1,8 +1,8 @@
 # Architecture
 
-> Status: Phase 0. This document describes the target architecture; the roadmap table in the
-> README tracks which pieces exist. Sections for unbuilt subsystems are design intent, not
-> documentation of shipped code.
+> Status: Phase 1. Bronze ingestion, local medallion storage, DuckDB catalog views, and the
+> offline smoke path are shipped. Sections for unbuilt subsystems are design intent, not
+> documentation of shipped code; see [roadmap.md](roadmap.md) for current phase status.
 
 ## System overview
 
@@ -73,7 +73,7 @@ flowchart LR
 | Module | Phase | Responsibility |
 |---|---|---|
 | `crucible.synth` | 0 | Deterministic labeled synthetic corpus |
-| `crucible.smoke` | 0 | Offline end-to-end smoke checks |
+| `crucible.smoke` | 1 | Offline end-to-end smoke checks through bronze |
 | `crucible.config` | 0 | YAML → pydantic config loading |
 | `crucible.utils.hashing` | 0 | Canonical serialization, content hashes |
 | `crucible.ingest` | 1 | Batch/stream connectors, backpressure, idempotent landing |

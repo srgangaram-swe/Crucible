@@ -113,3 +113,9 @@ markers = [
 
 [tool.coverage.run]
 source = ["src/crucible"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 95
+show_missing = true
+skip_empty = true
