@@ -76,9 +76,7 @@ class InMemoryBroker:
 
     def _backlog(self, topic: str) -> int:
         log_len = len(self._logs.get(topic, []))
-        committed = [
-            offset for (t, _g), offset in self._committed.items() if t == topic
-        ]
+        committed = [offset for (t, _g), offset in self._committed.items() if t == topic]
         return log_len - min(committed) if committed else log_len
 
     def publish(self, topic: str, payload: bytes, timeout: float | None = None) -> None:

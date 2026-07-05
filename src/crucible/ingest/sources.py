@@ -121,7 +121,5 @@ def open_source(path: Path, fmt: str = "auto", batch_size: int = 1000) -> Source
         return by_name[fmt](path, batch_size=batch_size)
     source_cls = _SUFFIX_TO_SOURCE.get(path.suffix.lower())
     if source_cls is None:
-        raise ValueError(
-            f"cannot infer format from suffix {path.suffix!r}; pass fmt= explicitly"
-        )
+        raise ValueError(f"cannot infer format from suffix {path.suffix!r}; pass fmt= explicitly")
     return source_cls(path, batch_size=batch_size)

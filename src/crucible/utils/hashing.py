@@ -21,7 +21,9 @@ def canonical_json(obj: Any, *, default: Callable[[Any], str] | None = None) -> 
     ``default`` handles non-JSON scalars (e.g. timestamps from Arrow rows);
     pass ``str`` to stringify them deterministically.
     """
-    return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False, default=default)
+    return json.dumps(
+        obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False, default=default
+    )
 
 
 def sha256_text(text: str) -> str:

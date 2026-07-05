@@ -57,7 +57,7 @@ def test_uncommitted_messages_are_redelivered() -> None:
 
 def test_backpressure_raises_on_timeout() -> None:
     broker = InMemoryBroker(capacity=3)
-    for i in range(3):
+    for _ in range(3):
         broker.publish("t", b"x", timeout=0.05)
     with pytest.raises(BrokerBackpressure, match="backlog at capacity"):
         broker.publish("t", b"overflow", timeout=0.05)

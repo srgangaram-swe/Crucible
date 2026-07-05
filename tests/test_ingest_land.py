@@ -76,9 +76,7 @@ def test_land_rejects_schema_drift(tmp_path: Path) -> None:
 def test_land_forgives_column_order(tmp_path: Path) -> None:
     catalog = Catalog(tmp_path / "catalog")
     land(ListSource([pa.table({"id": ["a"], "text": ["t"]})]), catalog, "demo", "test")
-    result = land(
-        ListSource([pa.table({"text": ["u"], "id": ["b"]})]), catalog, "demo", "test"
-    )
+    result = land(ListSource([pa.table({"text": ["u"], "id": ["b"]})]), catalog, "demo", "test")
     assert result.rows_written == 1
     table = catalog.read(Layer.BRONZE, "demo")
     assert table.column_names == ["id", "text"]
@@ -101,9 +99,7 @@ def test_land_promotes_all_null_columns_to_string(tmp_path: Path) -> None:
 def test_land_skips_empty_batches(tmp_path: Path) -> None:
     catalog = Catalog(tmp_path / "catalog")
     empty = pa.table({"id": pa.array([], type=pa.string())})
-    result = land(
-        ListSource([empty, pa.table({"id": ["a"]})]), catalog, "demo", "test"
-    )
+    result = land(ListSource([empty, pa.table({"id": ["a"]})]), catalog, "demo", "test")
     assert result.parts_written == 1
     assert result.rows_written == 1
 

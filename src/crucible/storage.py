@@ -43,9 +43,7 @@ class Layer(StrEnum):
 
 def _validate_dataset_name(dataset: str) -> str:
     if not _DATASET_NAME.match(dataset):
-        raise StorageError(
-            f"invalid dataset name {dataset!r}: must match {_DATASET_NAME.pattern}"
-        )
+        raise StorageError(f"invalid dataset name {dataset!r}: must match {_DATASET_NAME.pattern}")
     return dataset
 
 
@@ -98,9 +96,7 @@ class Catalog:
         return pa.concat_tables(pq.read_table(part) for part in parts)
 
     def row_count(self, layer: Layer, dataset: str) -> int:
-        return sum(
-            pq.ParquetFile(part).metadata.num_rows for part in self.parts(layer, dataset)
-        )
+        return sum(pq.ParquetFile(part).metadata.num_rows for part in self.parts(layer, dataset))
 
     # -- SQL ----------------------------------------------------------------
 

@@ -29,6 +29,7 @@ from typing import Any
 
 import pyarrow as pa
 import pyarrow.parquet as pq
+from pydantic import BaseModel, Field
 
 from crucible import __version__
 from crucible.ingest.sources import Source
@@ -36,6 +37,18 @@ from crucible.storage import Catalog, Layer
 from crucible.utils.hashing import canonical_json, sha256_texts
 
 _LOG_NAME = "_ingest_log.jsonl"
+
+
+class IngestConfig(BaseModel):
+    """One ingest run: land ``input`` into ``bronze/<dataset>`` under ``root``."""
+
+    input: Path
+    dataset: str
+    root: Path = Path("data/crucible")
+    fmt: str = "auto"
+    batch_size: int = Field(default=1000, ge=1)
+    source_name: str | None = None
+    via_stream: bool = False  # replay through the in-memory broker (jsonl only)
 
 
 class IngestError(Exception):

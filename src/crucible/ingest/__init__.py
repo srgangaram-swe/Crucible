@@ -5,7 +5,7 @@ connectors), :mod:`crucible.ingest.stream` (brokers + streaming source),
 and :mod:`crucible.ingest.land` (idempotent bronze landing).
 """
 
-from crucible.ingest.land import IngestError, IngestResult, land
+from crucible.ingest.land import IngestConfig, IngestError, IngestResult, land
 from crucible.ingest.sources import (
     CsvSource,
     HFSource,
@@ -31,6 +31,7 @@ __all__ = [
     "CsvSource",
     "HFSource",
     "InMemoryBroker",
+    "IngestConfig",
     "IngestError",
     "IngestResult",
     "JsonlSource",
