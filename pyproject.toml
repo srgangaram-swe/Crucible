@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "crucible-data"
-version = "0.1.0"
+version = "0.2.0"
 description = "Crucible: a local-first data refinery and data-centric research platform for distributed training."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -34,11 +34,12 @@ dependencies = [
 [project.optional-dependencies]
 # Each subsystem installs independently; core always works without any of these.
 stream = ["confluent-kafka>=2.3"]
+hf = ["datasets>=2.16"]
 quality = ["pandas>=2.1", "pandera>=0.18"]
 dedup = ["datasketch>=1.6"]
 train = ["torch>=2.2"]
 serve = ["fastapi>=0.109", "uvicorn>=0.27", "streamlit>=1.30"]
-all = ["crucible-data[stream,quality,dedup,train,serve]"]
+all = ["crucible-data[stream,hf,quality,dedup,train,serve]"]
 dev = [
     "black>=24.1",
     "mypy>=1.8",
