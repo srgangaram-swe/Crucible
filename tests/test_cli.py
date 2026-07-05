@@ -125,6 +125,50 @@ def test_promote_score_drift_round_trip(tmp_path: Path) -> None:
     assert json.loads(result.output)["verdict"] == "none"
 
 
+def test_dedup_and_score_dedup_round_trip(tmp_path: Path) -> None:
+    corpus = _synth_corpus(tmp_path)
+    root = tmp_path / "catalog"
+    runner = CliRunner()
+    runner.invoke(
+        main, ["ingest", "--input", str(corpus), "--dataset", "synth", "--root", str(root)]
+    )
+    runner.invoke(main, ["promote", "--dataset", "synth", "--root", str(root)])
+
+    # Sweep works pre-dedup (reconstructed from bronze minus quarantine).
+    result = runner.invoke(
+        main, ["score-dedup", "--dataset", "synth", "--root", str(root), "--sweep", "0.5,0.6"]
+    )
+    assert result.exit_code == 0, result.output
+    sweep = json.loads(result.output)
+    assert [row["threshold"] for row in sweep] == [0.5, 0.6]
+    assert all(row["recall_by_kind"].get("exact_dup") == 1.0 for row in sweep)
+
+    result = runner.invoke(main, ["dedup", "--dataset", "synth", "--root", str(root)])
+    assert result.exit_code == 0, result.output
+    summary = json.loads(result.output)
+    assert summary["kept_rows"] + summary["removed_exact"] + summary["removed_near"] == (
+        summary["input_rows"]
+    )
+    assert (root / "reports" / "dedup" / "synth.json").exists()
+
+    result = runner.invoke(main, ["score-dedup", "--dataset", "synth", "--root", str(root)])
+    assert result.exit_code == 0, result.output
+    score = json.loads(result.output)
+    assert score["recall_by_kind"].get("exact_dup") == 1.0
+
+
+def test_score_dedup_requires_report(tmp_path: Path) -> None:
+    corpus = _synth_corpus(tmp_path)
+    root = tmp_path / "catalog"
+    runner = CliRunner()
+    runner.invoke(
+        main, ["ingest", "--input", str(corpus), "--dataset", "synth", "--root", str(root)]
+    )
+    result = runner.invoke(main, ["score-dedup", "--dataset", "synth", "--root", str(root)])
+    assert result.exit_code != 0
+    assert "run `crucible dedup` first" in result.output
+
+
 def test_promote_blocked_exits_nonzero(tmp_path: Path) -> None:
     corpus = _synth_corpus(tmp_path)
     root = tmp_path / "catalog"

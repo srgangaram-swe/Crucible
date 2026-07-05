@@ -21,7 +21,9 @@ from typing import Any
 
 import duckdb
 
-from crucible.assay import score_gate
+from crucible.assay import score_dedup, score_gate
+from crucible.dedup import DedupConfig, run_dedup
+from crucible.dedup.pipeline import write_dedup_report
 from crucible.ingest import InMemoryBroker, JsonlSource, StreamSource, land, replay_jsonl
 from crucible.quality import QualityConfig, drift_report, run_gate, write_report
 from crucible.quality.drift import profile_table
@@ -165,10 +167,26 @@ def run_smoke(workdir: Path | None = None) -> dict[str, Any]:
     _check(drift_vs_self["verdict"] == "none", "drift false-alarmed on identical data")
     checks.append("drift_detection")
 
+    # 9. Dedup silver; scored against planted duplicates (evaluation-only).
+    silver_pre = catalog.read(Layer.SILVER, "synth")
+    dedup_result = run_dedup(catalog, "synth", DedupConfig())
+    write_dedup_report(dedup_result, catalog.root)
+    _check(
+        dedup_result.kept_rows + len(dedup_result.removed_ids) == silver_pre.num_rows,
+        "dedup lost or duplicated rows",
+    )
+    dedup_score = score_dedup(silver_pre, set(dedup_result.removed_ids))
+    _check(
+        dedup_score.recall_by_kind.get("exact_dup") == 1.0,
+        f"exact duplicates escaped dedup ({dedup_score.recall_by_kind})",
+    )
+    _check(dedup_score.f1 >= 0.75, f"dedup F1 regressed ({dedup_score.f1})")
+    checks.append("silver_dedup_measured")
+
     report = generation_report(_SMOKE_CONFIG, records)
     return {
         "ok": True,
-        "phase": 2,
+        "phase": 3,
         "checks_passed": checks,
         "elapsed_s": round(time.perf_counter() - started, 3),
         "corpus_sha256": digest,
@@ -178,6 +196,13 @@ def run_smoke(workdir: Path | None = None) -> dict[str, Any]:
             "gate": gate_result.as_dict(),
             "score_vs_ground_truth": score.as_dict(),
             "drift_vs_skewed": drift_vs_skewed,
+        },
+        "dedup": {
+            "kept_rows": dedup_result.kept_rows,
+            "removed_exact": dedup_result.removed_exact,
+            "removed_near": dedup_result.removed_near,
+            "n_clusters": dedup_result.n_clusters,
+            "score_vs_ground_truth": dedup_score.as_dict(),
         },
         "generation": report,
     }

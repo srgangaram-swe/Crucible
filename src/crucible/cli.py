@@ -9,9 +9,11 @@ from pathlib import Path
 import click
 
 from crucible import __version__
-from crucible.assay import score_gate
+from crucible.assay import score_dedup, score_gate, sweep_dedup_thresholds
 from crucible.assay.scoring import GroundTruthUnavailable
 from crucible.config import load_config
+from crucible.dedup import DedupConfig, run_dedup
+from crucible.dedup.pipeline import write_dedup_report
 from crucible.ingest import (
     IngestConfig,
     InMemoryBroker,
@@ -198,6 +200,82 @@ def promote(config_path: Path | None, dataset: str, root: Path) -> None:
     click.echo(json.dumps(result.as_dict(), indent=2))
     if result.verdict == "blocked":
         raise SystemExit(1)
+
+
+@main.command(name="dedup")
+@click.option(
+    "--config",
+    "config_path",
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    default=None,
+    help="YAML DedupConfig (see configs/dedup_default.yaml).",
+)
+@click.option("--dataset", required=True, help="Silver dataset to deduplicate in place.")
+@click.option(
+    "--root",
+    type=click.Path(file_okay=False, path_type=Path),
+    default=Path("data/crucible"),
+    show_default=True,
+)
+def dedup_cmd(config_path: Path | None, dataset: str, root: Path) -> None:
+    """Deduplicate silver: exact + MinHash/LSH near-dups, earliest kept.
+
+    Writes JSON+Markdown reports (the JSON records removed ids for
+    evaluation-only scoring).
+    """
+    cfg = load_config(DedupConfig, config_path)
+    result = run_dedup(Catalog(root), dataset, cfg)
+    write_dedup_report(result, root)
+    summary = result.as_dict()
+    summary["removed_ids"] = f"({len(result.removed_ids)} ids; see reports/dedup/{dataset}.json)"
+    click.echo(json.dumps(summary, indent=2))
+
+
+@main.command(name="score-dedup")
+@click.option("--dataset", required=True)
+@click.option(
+    "--root",
+    type=click.Path(file_okay=False, path_type=Path),
+    default=Path("data/crucible"),
+    show_default=True,
+)
+@click.option(
+    "--sweep",
+    default=None,
+    help="Comma-separated thresholds (e.g. 0.4,0.5,0.6) to re-cluster and score. "
+    "Runs on the reconstructed pre-dedup silver.",
+)
+def score_dedup_cmd(dataset: str, root: Path, sweep: str | None) -> None:
+    """EVALUATION ONLY: score dedup removals against planted gt_dup_of labels.
+
+    The scoring universe is the pre-dedup silver (bronze minus quarantine),
+    reconstructed so this works after `crucible dedup` has already rewritten
+    silver.
+    """
+    cat = Catalog(root)
+    bronze = cat.read(Layer.BRONZE, dataset)
+    quarantined: set[str] = set()
+    if cat.parts(Layer.QUARANTINE, dataset):
+        quarantined = set(cat.read(Layer.QUARANTINE, dataset).column("id").to_pylist())
+    keep = [
+        i
+        for i, record_id in enumerate(bronze.column("id").to_pylist())
+        if record_id not in quarantined
+    ]
+    pre_dedup = bronze.take(keep)
+    try:
+        if sweep is not None:
+            thresholds = [float(part) for part in sweep.split(",") if part.strip()]
+            rows = sweep_dedup_thresholds(pre_dedup, DedupConfig(), thresholds)
+            click.echo(json.dumps(rows, indent=2))
+            return
+        report_path = root / "reports" / "dedup" / f"{dataset}.json"
+        if not report_path.exists():
+            raise click.UsageError(f"no dedup report at {report_path}; run `crucible dedup` first")
+        removed_ids = set(json.loads(report_path.read_text())["removed_ids"])
+        click.echo(json.dumps(score_dedup(pre_dedup, removed_ids).as_dict(), indent=2))
+    except GroundTruthUnavailable as exc:
+        raise click.UsageError(str(exc)) from exc
 
 
 @main.command(name="score-gate")
