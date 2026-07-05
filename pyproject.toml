@@ -91,6 +91,9 @@ target-version = ["py311"]
 strict = true
 warn_unreachable = true
 files = ["src"]
+# pyarrow ships py.typed but large parts of its API are untyped; keep strict
+# checking for our code while allowing calls into pyarrow.
+untyped_calls_exclude = ["pyarrow"]
 
 [[tool.mypy.overrides]]
 module = ["duckdb.*", "pyarrow.*"]

@@ -484,7 +484,7 @@ def write_parquet(records: list[SynthRecord], path: Path) -> None:
         "gt_kind": [r.gt_kind for r in records],
         "gt_dup_of": [r.gt_dup_of for r in records],
     }
-    pq.write_table(pa.table(columns), path)  # type: ignore[no-untyped-call]
+    pq.write_table(pa.table(columns), path)
 
 
 def generation_report(cfg: SynthConfig, records: list[SynthRecord]) -> dict[str, object]:
