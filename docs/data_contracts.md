@@ -1,8 +1,8 @@
 # Data Contracts
 
 Crucible treats each data layer as a contract. The current shipped scope is
-bronze ingestion; later phases will add the silver, gold, and quarantine
-contracts without changing bronze semantics.
+bronze ingestion and the bronze→silver quality gate (with quarantine); later
+phases will add the gold contract without changing existing semantics.
 
 ## Catalog Root
 
@@ -83,9 +83,44 @@ The synthetic generator currently emits records with this schema:
 Pipeline stages must not use `gt_*` fields to make decisions. Those fields exist
 so tests and later experiments can score stage output exactly.
 
-## Planned Layers
+## Silver
 
-Silver will contain schema-valid, quality-gated, deduplicated records plus
-quarantine side outputs for rejected rows. Gold will contain curated mixtures
-and sharding-ready datasets. Those contracts will be added when their phases
-ship.
+Silver contains exactly the bronze records that passed every enabled quality
+rule. It is a **derived, rebuildable** layer:
+
+- Promotion is a pure function of (bronze content, `QualityConfig`); re-running
+  `crucible promote` rebuilds `silver/<dataset>` and `quarantine/<dataset>`
+  from scratch and produces identical content-addressed parts.
+- Schema is bronze's schema, unchanged. `gt_*` evaluation columns ride along
+  untouched; the gate never reads them.
+- If the reject rate exceeds `max_reject_rate`, **nothing** is promoted and the
+  verdict is `blocked` — a systematically broken source fails loudly rather
+  than leaking a plausible-looking silver dataset.
+- Deduplication is not silver's concern yet; it arrives in Phase 3 and will
+  narrow this contract (silver = validated **and deduplicated**).
+
+## Quarantine
+
+Quarantine holds the records the gate rejected, with one extra column:
+
+| Field | Type | Contract |
+|---|---|---|
+| `reject_reasons` | string | `\|`-joined names of every rule the record failed |
+
+Quarantine is diagnostic, not a dead letter queue: records are kept verbatim
+(including planted PII — see limitations.md; production systems would redact)
+so gate decisions can be audited and scored. `crucible score-gate` compares
+quarantine membership against the planted `gt_*` labels and reports exact
+precision/recall — on the smoke corpus, both are 1.0 with the default rules.
+
+## Quality Reports
+
+Each `crucible promote` writes `<root>/reports/quality/<dataset>.json` (full
+config + result, machine-readable) and `.md` (human summary). Reports describe
+the current promotion only; historical gate runs are reconstructable from
+config + bronze.
+
+## Gold (planned)
+
+Gold will contain curated mixtures and sharding-ready datasets. Its contract
+will be added when Phase 4+ ships.

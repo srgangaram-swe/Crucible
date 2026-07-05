@@ -14,5 +14,18 @@ a large-scale study. Specifically:
 - **Measured vs illustrative numbers.** Any number in docs or reports is either (a) produced
   by a committed, seed-controlled run whose config is referenced next to it, or (b) explicitly
   labeled "illustrative". Nothing in between — benchmark numbers are never fabricated.
+- **Gate scores are synthetic-corpus scores.** The measured precision/recall of the quality
+  gate (1.0/1.0 with default rules) is against *planted, template-generated* defects that the
+  rules were designed to detect. Real web junk is adversarial and long-tailed; these rules
+  would need re-tuning and the scores would not transfer. What does transfer is the
+  methodology: labeled defects, blind pipeline, exact scoring.
+- **PII is quarantined, not redacted.** Quarantine keeps rejected records verbatim so gate
+  decisions can be audited and scored. A production system would redact or tokenize PII
+  spans instead of parking them readable on disk; all planted PII here is synthetic
+  (`user123@example.com`, 555 numbers).
+- **Re-promotion is not concurrency-safe.** `run_gate` clears and rebuilds derived layers;
+  two concurrent promotions of the same dataset can interleave. Single-writer-per-dataset is
+  assumed throughout (fine for the local DAG runner; an object-store deployment would need a
+  lease or a versioned-pointer swap).
 
 *(This file is updated each phase as real constraints are discovered.)*

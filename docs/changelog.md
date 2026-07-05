@@ -2,6 +2,26 @@
 
 Format follows [Keep a Changelog](https://keepachangelog.com/); versions follow SemVer.
 
+## [0.3.0] - 2026-07-05 — Phase 2: quality gates
+
+### Added
+
+- `crucible.quality`: native Arrow rule engine (C4/RefinedWeb-inspired
+  heuristics) with hit rates verified exactly against planted defects;
+  bronze→silver promotion gate with quarantine (`reject_reasons`) and
+  whole-promotion blocking above a reject-rate ceiling; PSI drift detection
+  with JSON-serializable dataset profiles; JSON + Markdown gate reports.
+- `crucible.assay`: ground-truth scoring of gate decisions (the only code
+  allowed to read `gt_*`). Measured on the seed-42 smoke corpus: precision
+  1.0, recall 1.0 with default rules; the opt-in `no_repeated_sentences`
+  rule documented as a measured precision/keep-rate tradeoff.
+- pandera bridge (`quality` extra, included in dev deps so it is tested):
+  declarative second opinion on silver output.
+- CLI: `crucible promote`, `crucible score-gate` (evaluation-only),
+  `crucible drift`; `configs/quality_default.yaml`.
+- Smoke now runs gate → quarantine → measured scoring → drift detection
+  (~0.4s end to end); docs/quality.md; silver/quarantine data contracts.
+
 ## [0.2.0] - 2026-07-05 — Phase 1: ingestion + medallion storage
 
 ### Added
