@@ -10,14 +10,18 @@ from __future__ import annotations
 
 import hashlib
 import json
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from pathlib import Path
 from typing import Any
 
 
-def canonical_json(obj: Any) -> str:
-    """Serialize to JSON with sorted keys and no incidental whitespace."""
-    return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+def canonical_json(obj: Any, *, default: Callable[[Any], str] | None = None) -> str:
+    """Serialize to JSON with sorted keys and no incidental whitespace.
+
+    ``default`` handles non-JSON scalars (e.g. timestamps from Arrow rows);
+    pass ``str`` to stringify them deterministically.
+    """
+    return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False, default=default)
 
 
 def sha256_text(text: str) -> str:

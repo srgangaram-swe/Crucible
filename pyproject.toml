@@ -98,6 +98,11 @@ untyped_calls_exclude = ["pyarrow"]
 [[tool.mypy.overrides]]
 module = ["duckdb.*", "pyarrow.*"]
 ignore_missing_imports = true
+implicit_reexport = true
+
+[[tool.mypy.overrides]]
+module = ["confluent_kafka.*", "datasets.*"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
