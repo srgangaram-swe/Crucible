@@ -1,0 +1,21 @@
+# Default quality-gate policy (mirrors QualityConfig defaults).
+# Run with: crucible promote --dataset synth --config configs/quality_default.yaml
+#
+# no_repeated_sentences is available in the rule registry but intentionally
+# absent here: measured on the synthetic corpus it adds zero recall (the
+# marker rule already catches every planted boilerplate record) while
+# quarantining clean template-repetitive text. Enable it to reproduce that
+# tradeoff, or wait for the Phase 8 quality ablation which sweeps it.
+rules:
+  - non_empty
+  - min_words
+  - no_mojibake
+  - no_boilerplate_markers
+  - no_pii
+text_column: text
+id_column: id
+min_words: 5
+boilerplate_marker_threshold: 2
+max_duplicate_sentence_ratio: 0.3
+max_reject_rate: 0.5
+part_rows: 1000

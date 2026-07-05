@@ -1,12 +1,15 @@
 """End-to-end smoke check: proves the offline path works on this machine.
 
-Current scope (Phase 1): generate the synthetic corpus, verify determinism
-and ground-truth invariants, then land it in bronze through BOTH ingestion
-paths — batch JSONL and the in-memory streaming broker — and verify
-idempotency and cross-path equivalence via DuckDB. Later phases extend
-this to validate -> dedup -> version -> shard -> train; ``make smoke``
-must always exercise everything that exists so far, on CPU, with no
-external services, in about a minute.
+Current scope (Phase 2): generate the synthetic corpus, verify determinism
+and ground-truth invariants, land it in bronze through BOTH ingestion paths
+(batch JSONL and the in-memory streaming broker) with idempotency and
+cross-path equivalence checks, then run the quality gate to silver +
+quarantine, score it against the planted ground truth (recall must be
+perfect, precision near-perfect — these are measured, not asserted hopes),
+and verify PSI drift detection fires on a skewed mixture but not on
+identically-distributed data. Later phases extend this to dedup ->
+version -> shard -> train; ``make smoke`` must always exercise everything
+that exists so far, on CPU, with no external services, in about a minute.
 """
 
 from __future__ import annotations
@@ -18,13 +21,17 @@ from typing import Any
 
 import duckdb
 
+from crucible.assay import score_gate
 from crucible.ingest import InMemoryBroker, JsonlSource, StreamSource, land, replay_jsonl
-from crucible.storage import Catalog
+from crucible.quality import QualityConfig, drift_report, run_gate, write_report
+from crucible.quality.drift import profile_table
+from crucible.storage import Catalog, Layer
 from crucible.synth import (
     SynthConfig,
     corpus_sha256,
     generate_corpus,
     generation_report,
+    to_table,
     write_jsonl,
     write_parquet,
 )
@@ -124,14 +131,53 @@ def run_smoke(workdir: Path | None = None) -> dict[str, Any]:
     _check(diff == [{"n": 0}], "batch and stream paths landed different content")
     checks.append("bronze_stream_fallback_equivalent")
 
+    # 6. Quality gate: bronze -> silver + quarantine, with reports.
+    gate_cfg = QualityConfig()
+    gate_result = run_gate(catalog, "synth", gate_cfg)
+    _check(gate_result.verdict == "promoted", "quality gate blocked the smoke corpus")
+    _check(
+        gate_result.promoted_rows + gate_result.quarantined_rows == len(records),
+        "gate lost records between silver and quarantine",
+    )
+    _check(gate_result.quarantined_rows > 0, "gate quarantined nothing despite planted junk")
+    write_report(gate_result, gate_cfg, catalog.root)
+    checks.append("quality_gate_promoted")
+
+    # 7. Measured gate quality vs planted ground truth (evaluation-only read).
+    quarantined_ids = set(catalog.read(Layer.QUARANTINE, "synth").column("id").to_pylist())
+    score = score_gate(catalog.read(Layer.BRONZE, "synth"), quarantined_ids)
+    _check(score.recall == 1.0, f"gate missed planted defects (recall={score.recall})")
+    _check(score.precision >= 0.95, f"gate over-quarantined (precision={score.precision})")
+    checks.append("gate_precision_recall_measured")
+
+    # 8. Drift: a skewed mixture must register, an identical one must not.
+    skewed = generate_corpus(
+        SynthConfig(
+            seed=43,
+            n_docs=200,
+            domain_weights={"news": 0.05, "forum_qa": 0.05, "code": 0.85, "recipes": 0.05},
+        )
+    )
+    bronze_profile = profile_table(catalog.read(Layer.BRONZE, "synth"))
+    drift_vs_skewed = drift_report(bronze_profile, profile_table(to_table(skewed)))
+    drift_vs_self = drift_report(bronze_profile, bronze_profile)
+    _check(drift_vs_skewed["source_verdict"] == "major", "drift missed a skewed mixture")
+    _check(drift_vs_self["verdict"] == "none", "drift false-alarmed on identical data")
+    checks.append("drift_detection")
+
     report = generation_report(_SMOKE_CONFIG, records)
     return {
         "ok": True,
-        "phase": 1,
+        "phase": 2,
         "checks_passed": checks,
         "elapsed_s": round(time.perf_counter() - started, 3),
         "corpus_sha256": digest,
         "by_source_via_duckdb": by_source,
         "bronze": catalog.summary().get("bronze", {}),
+        "quality": {
+            "gate": gate_result.as_dict(),
+            "score_vs_ground_truth": score.as_dict(),
+            "drift_vs_skewed": drift_vs_skewed,
+        },
         "generation": report,
     }
