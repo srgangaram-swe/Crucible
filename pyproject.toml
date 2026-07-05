@@ -1,0 +1,107 @@
+[build-system]
+requires = ["hatchling>=1.21"]
+build-backend = "hatchling.build"
+
+[project]
+name = "crucible-data"
+version = "0.1.0"
+description = "Crucible: a local-first data refinery and data-centric research platform for distributed training."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Saif Ryan Gangaram" }]
+keywords = ["data-centric-ai", "data-engineering", "distributed-training", "deduplication", "data-quality"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+# Core dependencies: everything needed for the offline, no-external-services path.
+dependencies = [
+    "click>=8.1",
+    "duckdb>=0.10",
+    "numpy>=1.26",
+    "pyarrow>=15.0",
+    "pydantic>=2.5",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+# Each subsystem installs independently; core always works without any of these.
+stream = ["confluent-kafka>=2.3"]
+quality = ["pandas>=2.1", "pandera>=0.18"]
+dedup = ["datasketch>=1.6"]
+train = ["torch>=2.2"]
+serve = ["fastapi>=0.109", "uvicorn>=0.27", "streamlit>=1.30"]
+all = ["crucible-data[stream,quality,dedup,train,serve]"]
+dev = [
+    "black>=24.1",
+    "mypy>=1.8",
+    "pre-commit>=3.6",
+    "pytest>=8.0",
+    "pytest-cov>=4.1",
+    "ruff>=0.3",
+    "types-PyYAML",
+]
+
+[project.scripts]
+crucible = "crucible.cli:main"
+
+[project.urls]
+Repository = "https://github.com/srgangaram/crucible"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/crucible"]
+
+# ---------------------------------------------------------------------------
+# Tooling
+# ---------------------------------------------------------------------------
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "C4",  # flake8-comprehensions
+    "RUF", # ruff-specific
+]
+ignore = [
+    "E501", # line length handled by black
+]
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.mypy]
+strict = true
+warn_unreachable = true
+files = ["src"]
+
+[[tool.mypy.overrides]]
+module = ["duckdb.*", "pyarrow.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+markers = [
+    "slow: tests that take more than a few seconds (deselect with '-m \"not slow\"')",
+]
+
+[tool.coverage.run]
+source = ["src/crucible"]

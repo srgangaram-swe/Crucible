@@ -1,0 +1,14 @@
+# Small synthetic corpus for local experimentation.
+# Reproduce with: crucible synth --config configs/synth_small.yaml
+seed: 0
+n_docs: 2000
+domain_weights:
+  news: 0.4
+  forum_qa: 0.3
+  code: 0.2
+  recipes: 0.1
+exact_dup_rate: 0.06
+near_dup_rate: 0.10
+junk_rate: 0.06
+pii_rate: 0.04
+time_span_days: 30
