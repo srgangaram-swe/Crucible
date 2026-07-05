@@ -1,7 +1,7 @@
 """Distribution drift between datasets via the Population Stability Index.
 
 PSI (a symmetrized KL-divergence estimate over binned distributions) with
-the standard banking-industry thresholds: < 0.1 no drift, 0.1–0.25 moderate,
+the standard banking-industry thresholds: < 0.1 no drift, 0.1-0.25 moderate,
 > 0.25 major (Siddiqi, *Credit Risk Scorecards*, 2006). We profile two
 things a text corpus can drift on without any schema change: the source mix
 and the document-length distribution.

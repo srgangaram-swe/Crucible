@@ -31,7 +31,7 @@ def _import_pandera() -> Any:
 def corpus_schema(min_words: int = 1) -> pandera_pandas.DataFrameSchema:
     """Structural contract for a silver text corpus."""
     pandera = _import_pandera()
-    return pandera.DataFrameSchema(
+    schema: pandera_pandas.DataFrameSchema = pandera.DataFrameSchema(
         {
             "id": pandera.Column(str, unique=True, nullable=False),
             "text": pandera.Column(
@@ -48,6 +48,7 @@ def corpus_schema(min_words: int = 1) -> pandera_pandas.DataFrameSchema:
         strict=False,  # gt_* evaluation columns and extras may ride along
         coerce=False,
     )
+    return schema
 
 
 def validate_table(table: pa.Table, min_words: int = 1) -> None:

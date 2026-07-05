@@ -37,9 +37,10 @@ _BOILERPLATE_MARKERS = (
     "subscribe",
 )
 
-# Mojibake: UTF-8 read as latin-1/cp1252 leaves signature digraphs (Ã©, â‚¬,
-# Ã‚Â ...); U+FFFD means a decoder already gave up.
-_MOJIBAKE_PATTERN = re.compile("�|Ã[¢‚Â©â]|â‚¬|Ã¢â")
+# Mojibake: UTF-8 read as latin-1/cp1252 leaves signature digraph sequences
+# (the "A-tilde + punctuation" pairs matched below); U+FFFD means a decoder
+# already gave up. The pattern intentionally contains those garbled bytes.
+_MOJIBAKE_PATTERN = re.compile("�|Ã[¢‚Â©â]|â‚¬|Ã¢â")  # noqa: RUF001
 
 _EMAIL_PATTERN = re.compile(r"\b[\w.+-]+@[\w-]+\.[\w.-]+\b")
 _PHONE_PATTERN = re.compile(r"\(\d{3}\)\s*\d{2,4}|\b\d{3}[-.\s]\d{3}[-.\s]\d{4}\b")
