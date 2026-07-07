@@ -1,0 +1,17 @@
+# Default dedup policy (mirrors DedupConfig defaults).
+# Run with: crucible dedup --dataset synth --config configs/dedup_default.yaml
+#
+# threshold 0.5 maximizes F1 (0.79) on the synthetic corpus: exact-dup
+# recall 1.0, near-dup recall 0.7, precision 0.78. Raising to 0.6 gives
+# precision 1.0 at recall 0.53. Reproduce the tradeoff curve with:
+#   crucible score-dedup --dataset synth --sweep 0.3,0.4,0.5,0.6,0.7
+text_column: text
+id_column: id
+exact_normalize: whitespace   # none | whitespace | aggressive
+shingle_size: 3
+num_perm: 128
+bands: 32
+threshold: 0.5
+seed: 0
+backend: native               # native | datasketch (.[dedup] extra)
+part_rows: 1000

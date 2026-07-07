@@ -17,6 +17,7 @@ httpfs extension, not a redesign.
 from __future__ import annotations
 
 import re
+import shutil
 from enum import StrEnum
 from pathlib import Path
 from typing import Any
@@ -25,9 +26,17 @@ import duckdb
 import pyarrow as pa
 import pyarrow.parquet as pq
 
+from crucible.utils.hashing import canonical_json, sha256_texts
+
 # Dataset names become DuckDB view names (``<layer>_<dataset>``), so keep
 # them SQL-identifier-safe by construction.
 _DATASET_NAME = re.compile(r"^[a-z][a-z0-9_]{0,62}$")
+
+
+def table_content_hash(table: pa.Table) -> str:
+    """Order-sensitive content hash of a table's canonical rows — the
+    identity used for content-addressed part names everywhere."""
+    return sha256_texts(canonical_json(row, default=str) for row in table.to_pylist())
 
 
 class StorageError(Exception):
@@ -124,6 +133,29 @@ class Catalog:
             cursor = conn.execute(sql)
             columns = [description[0] for description in cursor.description or []]
             return [dict(zip(columns, row, strict=True)) for row in cursor.fetchall()]
+
+    # -- derived-layer rewrites ----------------------------------------------
+
+    def replace_dataset(
+        self, table: pa.Table, layer: Layer, dataset: str, part_rows: int = 1000
+    ) -> int:
+        """Clear and rebuild a *derived* dataset from a table; returns part count.
+
+        Only derived layers (silver/gold/quarantine) may be replaced — they
+        are pure functions of upstream content + config, so clearing them is
+        always safe. Bronze is immutable and refuses.
+        """
+        if layer is Layer.BRONZE:
+            raise StorageError("bronze is immutable; only derived layers can be replaced")
+        directory = self.dataset_dir(layer, dataset)
+        if directory.exists():
+            shutil.rmtree(directory)
+        parts = 0
+        for start in range(0, table.num_rows, part_rows):
+            chunk = table.slice(start, part_rows)
+            self.write_part(chunk, layer, dataset, f"part-{table_content_hash(chunk)[:16]}")
+            parts += 1
+        return parts
 
     def summary(self) -> dict[str, dict[str, dict[str, int]]]:
         """Per-layer, per-dataset part and row counts (for `crucible catalog`)."""

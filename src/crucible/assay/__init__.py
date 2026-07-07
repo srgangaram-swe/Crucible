@@ -8,6 +8,12 @@ makes reported precision/recall real measurements instead of claims.
 Grows into the full experiment harness in Phase 8.
 """
 
-from crucible.assay.scoring import GateScore, score_gate
+from crucible.assay.scoring import (
+    DedupScore,
+    GateScore,
+    score_dedup,
+    score_gate,
+    sweep_dedup_thresholds,
+)
 
-__all__ = ["GateScore", "score_gate"]
+__all__ = ["DedupScore", "GateScore", "score_dedup", "score_gate", "sweep_dedup_thresholds"]

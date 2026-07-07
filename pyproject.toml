@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "crucible-data"
-version = "0.3.0"
+version = "0.4.0"
 description = "Crucible: a local-first data refinery and data-centric research platform for distributed training."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -48,8 +48,9 @@ dev = [
     "pytest-cov>=4.1",
     "ruff>=0.3",
     "types-PyYAML",
-    # quality extra included so the pandera bridge is tested, not decorative
-    "crucible-data[quality]",
+    # quality + dedup extras included so the pandera bridge and datasketch
+    # backend are tested, not decorative
+    "crucible-data[quality,dedup]",
 ]
 
 [project.scripts]
@@ -104,7 +105,7 @@ ignore_missing_imports = true
 implicit_reexport = true
 
 [[tool.mypy.overrides]]
-module = ["confluent_kafka.*", "datasets.*"]
+module = ["confluent_kafka.*", "datasets.*", "datasketch.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

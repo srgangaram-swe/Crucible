@@ -23,6 +23,15 @@ a large-scale study. Specifically:
   decisions can be audited and scored. A production system would redact or tokenize PII
   spans instead of parking them readable on disk; all planted PII here is synthetic
   (`user123@example.com`, 555 numbers).
+- **Near-dup recall tops out below 1.0 by design.** Planted near-duplicates carry 8-15%
+  token edits, placing their Jaccard band deliberately astride usable thresholds — at the
+  F1-optimal threshold, near-dup recall is 0.7 (measured). A generator whose defects were
+  all trivially detectable would make every reported metric meaningless. Some dedup "false
+  positives" are actually unlabeled accidental template collisions; these are counted
+  separately (`fp_unlabeled_exact`) instead of being forgiven.
+- **Promote-then-dedup ordering is by convention until Phase 7.** Re-running `crucible
+  promote` after `crucible dedup` resurrects duplicates; the DAG runner will encode the
+  ordering.
 - **Re-promotion is not concurrency-safe.** `run_gate` clears and rebuilds derived layers;
   two concurrent promotions of the same dataset can interleave. Single-writer-per-dataset is
   assumed throughout (fine for the local DAG runner; an object-store deployment would need a

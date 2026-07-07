@@ -34,13 +34,17 @@ tests, docs, and smoke path for that phase are present.
   repeated-sentences rule documented as a precision/keep-rate tradeoff.
 - pandera bridge as a declarative second opinion (quality extra).
 
-## Next
-
 ### Phase 3: Deduplication
 
-- Exact duplicate removal.
-- MinHash/LSH near-duplicate candidate generation.
-- Precision/recall reports against synthetic `gt_*` fields.
+- Exact removal via normalized-text hashing; near-dup via from-scratch
+  seed-deterministic MinHash + banded LSH with exact-Jaccard verification;
+  union-find clusters keeping the smallest-id (earliest) record.
+- datasketch as a config-switchable backend pinned to the same LSH banding.
+- `crucible dedup` and `crucible score-dedup [--sweep ...]`; measured on the
+  seed-42 corpus: exact recall 1.0 at every threshold, F1 0.79 at 0.5,
+  precision 1.0 at 0.6 — full curve in docs/dedup.md.
+
+## Next
 
 ### Phase 4: Versioning and Lineage
 
