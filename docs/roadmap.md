@@ -22,14 +22,19 @@ tests, docs, and smoke path for that phase are present.
 - Smoke path that proves batch ingest, stream ingest, idempotency, and
   cross-path equivalence through bronze.
 
-## Next
-
 ### Phase 2: Quality Gates
 
-- Declarative schema and statistical quality checks.
-- Quarantine output for rejected rows.
-- Drift reports over source/domain distributions and text statistics.
-- CLI commands that promote bronze to silver only through explicit gates.
+- Native Arrow rule engine (C4/RefinedWeb-style heuristics) with exact
+  hit-rate verification against planted defects.
+- Bronze→silver promotion as a pure function of (bronze, config); quarantine
+  with `reject_reasons`; whole-promotion blocking above a reject-rate ceiling.
+- PSI drift detection over source mix and length distribution.
+- `crucible promote`, `crucible score-gate` (evaluation-only), `crucible drift`.
+- Measured on the seed-42 corpus: precision 1.0, recall 1.0; the opt-in
+  repeated-sentences rule documented as a precision/keep-rate tradeoff.
+- pandera bridge as a declarative second opinion (quality extra).
+
+## Next
 
 ### Phase 3: Deduplication
 

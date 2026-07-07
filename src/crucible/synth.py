@@ -474,8 +474,7 @@ def write_jsonl(records: list[SynthRecord], path: Path) -> None:
             handle.write(json.dumps(asdict(record), ensure_ascii=False) + "\n")
 
 
-def write_parquet(records: list[SynthRecord], path: Path) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
+def to_table(records: list[SynthRecord]) -> pa.Table:
     columns: dict[str, list[str | None]] = {
         "id": [r.id for r in records],
         "text": [r.text for r in records],
@@ -484,7 +483,12 @@ def write_parquet(records: list[SynthRecord], path: Path) -> None:
         "gt_kind": [r.gt_kind for r in records],
         "gt_dup_of": [r.gt_dup_of for r in records],
     }
-    pq.write_table(pa.table(columns), path)
+    return pa.table(columns)
+
+
+def write_parquet(records: list[SynthRecord], path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pq.write_table(to_table(records), path)
 
 
 def generation_report(cfg: SynthConfig, records: list[SynthRecord]) -> dict[str, object]:

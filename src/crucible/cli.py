@@ -9,6 +9,8 @@ from pathlib import Path
 import click
 
 from crucible import __version__
+from crucible.assay import score_gate
+from crucible.assay.scoring import GroundTruthUnavailable
 from crucible.config import load_config
 from crucible.ingest import (
     IngestConfig,
@@ -18,8 +20,10 @@ from crucible.ingest import (
     open_source,
     replay_jsonl,
 )
+from crucible.quality import QualityConfig, drift_report, run_gate, write_report
+from crucible.quality.drift import profile_table
 from crucible.smoke import SmokeFailure, run_smoke
-from crucible.storage import Catalog
+from crucible.storage import Catalog, Layer
 from crucible.synth import (
     SynthConfig,
     generate_corpus,
@@ -165,6 +169,84 @@ def sql(query: str, root: Path) -> None:
 def catalog(root: Path) -> None:
     """Show per-layer datasets with part and row counts."""
     click.echo(json.dumps(Catalog(root).summary(), indent=2))
+
+
+@main.command()
+@click.option(
+    "--config",
+    "config_path",
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    default=None,
+    help="YAML QualityConfig (see configs/quality_default.yaml).",
+)
+@click.option("--dataset", required=True, help="Bronze dataset to gate.")
+@click.option(
+    "--root",
+    type=click.Path(file_okay=False, path_type=Path),
+    default=Path("data/crucible"),
+    show_default=True,
+)
+def promote(config_path: Path | None, dataset: str, root: Path) -> None:
+    """Run the quality gate: bronze -> silver, failures -> quarantine.
+
+    Writes JSON+Markdown reports under <root>/reports/quality/ and exits
+    nonzero when promotion is blocked.
+    """
+    cfg = load_config(QualityConfig, config_path)
+    result = run_gate(Catalog(root), dataset, cfg)
+    write_report(result, cfg, root)
+    click.echo(json.dumps(result.as_dict(), indent=2))
+    if result.verdict == "blocked":
+        raise SystemExit(1)
+
+
+@main.command(name="score-gate")
+@click.option("--dataset", required=True)
+@click.option(
+    "--root",
+    type=click.Path(file_okay=False, path_type=Path),
+    default=Path("data/crucible"),
+    show_default=True,
+)
+def score_gate_cmd(dataset: str, root: Path) -> None:
+    """EVALUATION ONLY: score quarantine decisions against planted gt_* labels.
+
+    This is the one CLI path that reads ground truth; it exists so reported
+    gate precision/recall are measurements, and it fails cleanly on real
+    (non-synthetic) datasets that carry no labels.
+    """
+    cat = Catalog(root)
+    quarantined: set[str] = set()
+    if cat.parts(Layer.QUARANTINE, dataset):
+        quarantined = set(cat.read(Layer.QUARANTINE, dataset).column("id").to_pylist())
+    try:
+        score = score_gate(cat.read(Layer.BRONZE, dataset), quarantined)
+    except GroundTruthUnavailable as exc:
+        raise click.UsageError(str(exc)) from exc
+    click.echo(json.dumps(score.as_dict(), indent=2))
+
+
+@main.command()
+@click.option("--dataset", required=True, help="Reference dataset.")
+@click.option("--against", required=True, help="Dataset to compare with the reference.")
+@click.option(
+    "--layer",
+    type=click.Choice([layer.value for layer in Layer]),
+    default=Layer.BRONZE.value,
+    show_default=True,
+)
+@click.option(
+    "--root",
+    type=click.Path(file_okay=False, path_type=Path),
+    default=Path("data/crucible"),
+    show_default=True,
+)
+def drift(dataset: str, against: str, layer: str, root: Path) -> None:
+    """PSI drift between two datasets' source mix and length distribution."""
+    cat = Catalog(root)
+    reference = profile_table(cat.read(Layer(layer), dataset))
+    current = profile_table(cat.read(Layer(layer), against))
+    click.echo(json.dumps(drift_report(reference, current), indent=2))
 
 
 @main.command()

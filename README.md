@@ -33,16 +33,18 @@ refinement, and the `assay` experiment harness measures the purity of what comes
 
 ## Status
 
-**Phase 1 of 8** - bronze ingestion is shipped. The CLI can generate synthetic data, land
-batch or in-memory-streamed sources into bronze Parquet parts, query those parts through
-DuckDB views, and run an offline smoke check through both ingestion paths. The roadmap below
-is honest about what exists versus what is planned.
+**Phase 2 of 8** - bronze ingestion and the quality gate are shipped. The CLI can generate
+synthetic data, land batch or in-memory-streamed sources into bronze Parquet parts, promote
+them through a validating gate into silver (failures land in quarantine with reasons), detect
+distribution drift, and score the gate's decisions against planted ground truth — measured on
+the smoke corpus: **precision 1.0, recall 1.0** across all planted junk and PII kinds. The
+roadmap below is honest about what exists versus what is planned.
 
 | Phase | Subsystem | Status |
 |---|---|---|
 | 0 | Scaffold, CI, CLI, synthetic corpus generator | done |
 | 1 | Batch + streaming ingestion to bronze, local catalog, DuckDB SQL, smoke through bronze | done |
-| 2 | Quality gates, quarantine, drift detection, reports | planned |
+| 2 | Quality gates, quarantine, drift detection, measured gate scoring, reports | done |
 | 3 | Exact + MinHash/LSH deduplication with measured rates | planned |
 | 4 | Content-addressed versioning, manifests, lineage graph | planned |
 | 5 | Feature layer with point-in-time joins + leakage guards | planned |
@@ -82,6 +84,16 @@ path without Kafka:
 
 ```bash
 .venv/bin/crucible ingest --input data/raw/synth/corpus.jsonl --dataset synth_stream --via-stream
+```
+
+Promote bronze through the quality gate (failures go to quarantine with reasons), then score
+the gate's decisions against the planted ground truth — the one command allowed to read
+`gt_*` labels:
+
+```bash
+.venv/bin/crucible promote --dataset synth          # bronze -> silver + quarantine + report
+.venv/bin/crucible score-gate --dataset synth       # measured precision/recall vs ground truth
+.venv/bin/crucible sql "SELECT reject_reasons, count(*) FROM quarantine_synth GROUP BY 1"
 ```
 
 ## Design principles
