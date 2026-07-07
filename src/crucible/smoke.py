@@ -1,15 +1,14 @@
 """End-to-end smoke check: proves the offline path works on this machine.
 
-Current scope (Phase 2): generate the synthetic corpus, verify determinism
-and ground-truth invariants, land it in bronze through BOTH ingestion paths
-(batch JSONL and the in-memory streaming broker) with idempotency and
-cross-path equivalence checks, then run the quality gate to silver +
-quarantine, score it against the planted ground truth (recall must be
-perfect, precision near-perfect — these are measured, not asserted hopes),
-and verify PSI drift detection fires on a skewed mixture but not on
-identically-distributed data. Later phases extend this to dedup ->
-version -> shard -> train; ``make smoke`` must always exercise everything
-that exists so far, on CPU, with no external services, in about a minute.
+Current scope (Phase 4): synthetic corpus (determinism + ground-truth
+invariants) -> bronze via BOTH ingestion paths (idempotency, cross-path
+equivalence) -> quality gate to silver + quarantine with measured
+precision/recall vs planted defects -> PSI drift detection -> exact +
+MinHash/LSH dedup with measured scores -> lineage graph, version
+snapshots, snapshot verification, and a byte-identical rebuild of silver
+in a fresh catalog. Later phases extend this to shard -> train; ``make
+smoke`` must always exercise everything that exists so far, on CPU, with
+no external services, in about a minute.
 """
 
 from __future__ import annotations
@@ -25,6 +24,7 @@ from crucible.assay import score_dedup, score_gate
 from crucible.dedup import DedupConfig, run_dedup
 from crucible.dedup.pipeline import write_dedup_report
 from crucible.ingest import InMemoryBroker, JsonlSource, StreamSource, land, replay_jsonl
+from crucible.lineage import LineageGraph
 from crucible.quality import QualityConfig, drift_report, run_gate, write_report
 from crucible.quality.drift import profile_table
 from crucible.storage import Catalog, Layer
@@ -37,6 +37,7 @@ from crucible.synth import (
     write_jsonl,
     write_parquet,
 )
+from crucible.versioning import build_manifest, list_snapshots, verify_snapshot
 
 _SMOKE_CONFIG = SynthConfig(seed=42, n_docs=400)
 
@@ -183,10 +184,40 @@ def run_smoke(workdir: Path | None = None) -> dict[str, Any]:
     _check(dedup_score.f1 >= 0.75, f"dedup F1 regressed ({dedup_score.f1})")
     checks.append("silver_dedup_measured")
 
+    # 10. Lineage graph + version snapshots recorded by the stages above.
+    graph = LineageGraph.from_root(catalog.root)
+    _check(
+        {"ingest:synth", "promote:synth", "dedup:synth"} <= set(graph.jobs),
+        f"lineage jobs missing: {sorted(graph.jobs)}",
+    )
+    _check(
+        "bronze/synth" in graph.upstream("silver/synth"),
+        "lineage does not trace silver back to bronze",
+    )
+    snapshots = list_snapshots(catalog.root, "synth")
+    _check(
+        {"promote", "dedup"} <= {snapshot["stage"] for snapshot in snapshots},
+        "promote/dedup snapshots were not recorded",
+    )
+    ok, detail = verify_snapshot(catalog, snapshots[-1])
+    _check(ok, f"latest snapshot failed verification: {detail}")
+    checks.append("lineage_and_snapshots")
+
+    # 11. Reproducibility: a fresh catalog fed the same inputs and configs
+    # must rebuild byte-identical silver content.
+    rebuild = Catalog(workdir / "catalog_rebuild")
+    land(JsonlSource(jsonl_path, batch_size=97), rebuild, "synth", "smoke-batch")
+    run_gate(rebuild, "synth", gate_cfg)
+    run_dedup(rebuild, "synth", DedupConfig())
+    original_hash = build_manifest(catalog, Layer.SILVER, "synth").content_hash
+    rebuilt_hash = build_manifest(rebuild, Layer.SILVER, "synth").content_hash
+    _check(original_hash == rebuilt_hash, "rebuild produced different silver content")
+    checks.append("byte_identical_rebuild")
+
     report = generation_report(_SMOKE_CONFIG, records)
     return {
         "ok": True,
-        "phase": 3,
+        "phase": 4,
         "checks_passed": checks,
         "elapsed_s": round(time.perf_counter() - started, 3),
         "corpus_sha256": digest,
@@ -203,6 +234,14 @@ def run_smoke(workdir: Path | None = None) -> dict[str, Any]:
             "removed_near": dedup_result.removed_near,
             "n_clusters": dedup_result.n_clusters,
             "score_vs_ground_truth": dedup_score.as_dict(),
+        },
+        "versioning": {
+            "snapshots": [
+                {"stage": snapshot["stage"], "snapshot_id": snapshot["snapshot_id"]}
+                for snapshot in snapshots
+            ],
+            "silver_content_hash": original_hash,
+            "rebuild_matches": True,
         },
         "generation": report,
     }

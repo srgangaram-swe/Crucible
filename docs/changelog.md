@@ -2,6 +2,23 @@
 
 Format follows [Keep a Changelog](https://keepachangelog.com/); versions follow SemVer.
 
+## [0.5.0] - 2026-07-06 — Phase 4: versioning & lineage
+
+### Added
+
+- `crucible.versioning`: content-addressed dataset manifests (sorted
+  part:sha256 lines); version snapshots pinning (stage, config hash, input
+  manifest hashes, code version, output hash), written automatically by
+  promote and dedup; `verify_snapshot` detects tampering and stale pins.
+- `crucible.lineage`: OpenLineage-inspired COMPLETE events appended by
+  ingest/promote/dedup (blocked promotions emit too, with empty outputs);
+  `LineageGraph` with upstream ancestry and Mermaid rendering.
+- CLI: `crucible versions`, `crucible verify-snapshot`, `crucible lineage
+  [--mermaid]`.
+- Smoke stages 10-11: lineage/snapshot presence + verification, and a
+  byte-identical rebuild of silver in a fresh catalog (the reproducibility
+  contract, proven not claimed); docs/lineage.md; metadata-plane contract.
+
 ## [0.4.0] - 2026-07-05 — Phase 3: deduplication
 
 ### Added

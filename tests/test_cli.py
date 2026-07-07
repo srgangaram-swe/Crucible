@@ -157,6 +157,57 @@ def test_dedup_and_score_dedup_round_trip(tmp_path: Path) -> None:
     assert score["recall_by_kind"].get("exact_dup") == 1.0
 
 
+def test_versions_verify_lineage_round_trip(tmp_path: Path) -> None:
+    corpus = _synth_corpus(tmp_path)
+    root = tmp_path / "catalog"
+    runner = CliRunner()
+    runner.invoke(
+        main, ["ingest", "--input", str(corpus), "--dataset", "synth", "--root", str(root)]
+    )
+    runner.invoke(main, ["promote", "--dataset", "synth", "--root", str(root)])
+    runner.invoke(main, ["dedup", "--dataset", "synth", "--root", str(root)])
+
+    result = runner.invoke(main, ["versions", "--dataset", "synth", "--root", str(root)])
+    assert result.exit_code == 0, result.output
+    records = json.loads(result.output)
+    assert {record["stage"] for record in records} == {"promote", "dedup"}
+
+    result = runner.invoke(main, ["verify-snapshot", "--dataset", "synth", "--root", str(root)])
+    assert result.exit_code == 0, result.output
+    assert json.loads(result.output)["ok"] is True
+
+    result = runner.invoke(main, ["lineage", "--dataset", "silver/synth", "--root", str(root)])
+    assert result.exit_code == 0, result.output
+    lineage = json.loads(result.output)
+    assert "bronze/synth" in lineage["upstream_of_silver/synth"]
+
+    result = runner.invoke(main, ["lineage", "--mermaid", "--root", str(root)])
+    assert result.exit_code == 0, result.output
+    assert result.output.startswith("flowchart LR")
+
+
+def test_verify_snapshot_fails_on_stale_pin(tmp_path: Path) -> None:
+    corpus = _synth_corpus(tmp_path)
+    root = tmp_path / "catalog"
+    runner = CliRunner()
+    runner.invoke(
+        main, ["ingest", "--input", str(corpus), "--dataset", "synth", "--root", str(root)]
+    )
+    runner.invoke(main, ["promote", "--dataset", "synth", "--root", str(root)])
+    runner.invoke(main, ["dedup", "--dataset", "synth", "--root", str(root)])
+    # The promote snapshot pinned pre-dedup silver; verifying it now fails.
+    result = runner.invoke(main, ["versions", "--dataset", "synth", "--root", str(root)])
+    promote_id = next(
+        r["snapshot_id"] for r in json.loads(result.output) if r["stage"] == "promote"
+    )
+    result = runner.invoke(
+        main,
+        ["verify-snapshot", "--dataset", "synth", "--snapshot-id", promote_id, "--root", str(root)],
+    )
+    assert result.exit_code == 1
+    assert json.loads(result.output)["ok"] is False
+
+
 def test_score_dedup_requires_report(tmp_path: Path) -> None:
     corpus = _synth_corpus(tmp_path)
     root = tmp_path / "catalog"

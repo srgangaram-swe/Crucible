@@ -19,7 +19,9 @@ from pydantic import BaseModel, Field, model_validator
 
 from crucible.dedup.exact import exact_duplicate_groups, normalize
 from crucible.dedup.minhash import MinHasher, jaccard, lsh_candidate_pairs, shingles
+from crucible.lineage import dataset_ref, emit_event
 from crucible.storage import Catalog, Layer
+from crucible.versioning import build_manifest, snapshot_stage
 
 
 class DedupConfig(BaseModel):
@@ -194,6 +196,7 @@ class DedupResult:
 def run_dedup(catalog: Catalog, dataset: str, cfg: DedupConfig) -> DedupResult:
     """Deduplicate silver/<dataset> in place (earliest record per cluster kept)."""
     started = time.perf_counter()
+    pre_manifest = build_manifest(catalog, Layer.SILVER, dataset)
     table = catalog.read(Layer.SILVER, dataset)
     texts = [value or "" for value in table.column(cfg.text_column).to_pylist()]
     ids = [str(value) for value in table.column(cfg.id_column).to_pylist()]
@@ -204,6 +207,21 @@ def run_dedup(catalog: Catalog, dataset: str, cfg: DedupConfig) -> DedupResult:
     silver_parts = catalog.replace_dataset(
         table.take(kept_indices), Layer.SILVER, dataset, cfg.part_rows
     )
+
+    post_manifest = build_manifest(catalog, Layer.SILVER, dataset)
+    emit_event(
+        catalog.root,
+        job=f"dedup:{dataset}",
+        inputs=[dataset_ref(f"silver/{dataset}", pre_manifest.content_hash, pre_manifest.n_rows)],
+        outputs=[
+            dataset_ref(f"silver/{dataset}", post_manifest.content_hash, post_manifest.n_rows)
+        ],
+        facets={
+            "removed_exact": duplicates.removed_exact,
+            "removed_near": duplicates.removed_near,
+        },
+    )
+    snapshot_stage(catalog, "dedup", cfg, [pre_manifest], (Layer.SILVER, dataset))
 
     return DedupResult(
         dataset=dataset,

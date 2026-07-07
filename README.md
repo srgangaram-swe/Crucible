@@ -33,11 +33,13 @@ refinement, and the `assay` experiment harness measures the purity of what comes
 
 ## Status
 
-**Phase 3 of 8** - ingestion, the quality gate, and deduplication are shipped. The pipeline
-runs synthetic data → bronze (batch or streamed) → quality gate → silver + quarantine →
-exact + MinHash/LSH dedup, with every stage scored against planted ground truth. Measured on
-the smoke corpus: gate **precision 1.0 / recall 1.0**; dedup **exact-dup recall 1.0**,
-near-dup recall 0.7, F1 0.79 at the default threshold (full tradeoff curve in
+**Phase 4 of 8** - ingestion, the quality gate, deduplication, and versioning/lineage are
+shipped. The pipeline runs synthetic data → bronze (batch or streamed) → quality gate →
+silver + quarantine → exact + MinHash/LSH dedup, with every stage scored against planted
+ground truth, every run recorded as a lineage event, and every promote/dedup pinned by a
+verifiable content-addressed snapshot — the smoke test rebuilds silver **byte-identically**
+in a fresh catalog. Measured: gate **precision 1.0 / recall 1.0**; dedup **exact-dup recall
+1.0**, near-dup recall 0.7, F1 0.79 at the default threshold (tradeoff curve in
 [docs/dedup.md](docs/dedup.md)). The roadmap below is honest about what exists versus what
 is planned.
 
@@ -47,7 +49,7 @@ is planned.
 | 1 | Batch + streaming ingestion to bronze, local catalog, DuckDB SQL, smoke through bronze | done |
 | 2 | Quality gates, quarantine, drift detection, measured gate scoring, reports | done |
 | 3 | Exact + MinHash/LSH deduplication with measured precision/recall and threshold sweep | done |
-| 4 | Content-addressed versioning, manifests, lineage graph | planned |
+| 4 | Content-addressed manifests, verifiable version snapshots, lineage graph | done |
 | 5 | Feature layer with point-in-time joins + leakage guards | planned |
 | 6 | Training-shard builder + DDP/FSDP reference trainer | planned |
 | 7 | Orchestration DAG, FastAPI service, Streamlit dashboard | planned |
@@ -104,6 +106,14 @@ tradeoff curve:
 .venv/bin/crucible score-dedup --dataset synth --sweep 0.4,0.5,0.6   # pre-dedup sweep
 .venv/bin/crucible dedup --dataset synth                             # earliest record kept
 .venv/bin/crucible score-dedup --dataset synth                       # measured P/R/F1
+```
+
+Every stage recorded lineage and version snapshots as it ran:
+
+```bash
+.venv/bin/crucible lineage --dataset silver/synth    # what fed this dataset?
+.venv/bin/crucible versions --dataset synth          # snapshots: (config, inputs, code, output)
+.venv/bin/crucible verify-snapshot --dataset synth   # do the bytes still match the pin?
 ```
 
 ## Design principles

@@ -22,6 +22,7 @@ from crucible.ingest import (
     open_source,
     replay_jsonl,
 )
+from crucible.lineage import LineageGraph
 from crucible.quality import QualityConfig, drift_report, run_gate, write_report
 from crucible.quality.drift import profile_table
 from crucible.smoke import SmokeFailure, run_smoke
@@ -33,6 +34,7 @@ from crucible.synth import (
     write_jsonl,
     write_parquet,
 )
+from crucible.versioning import list_snapshots, verify_snapshot
 
 
 @click.group()
@@ -200,6 +202,93 @@ def promote(config_path: Path | None, dataset: str, root: Path) -> None:
     click.echo(json.dumps(result.as_dict(), indent=2))
     if result.verdict == "blocked":
         raise SystemExit(1)
+
+
+@main.command()
+@click.option("--dataset", required=True)
+@click.option(
+    "--root",
+    type=click.Path(file_okay=False, path_type=Path),
+    default=Path("data/crucible"),
+    show_default=True,
+)
+def versions(dataset: str, root: Path) -> None:
+    """List version snapshots for a dataset (stage, id, output hash, rows)."""
+    records = list_snapshots(root, dataset)
+    click.echo(
+        json.dumps(
+            [
+                {
+                    "snapshot_id": record["snapshot_id"],
+                    "stage": record["stage"],
+                    "created_at": record["created_at"],
+                    "code_version": record["code_version"],
+                    "output_hash": str(record["output"]["content_hash"])[:12],
+                    "n_rows": record["output"]["n_rows"],
+                }
+                for record in records
+            ],
+            indent=2,
+        )
+    )
+
+
+@main.command(name="verify-snapshot")
+@click.option("--dataset", required=True)
+@click.option("--snapshot-id", default=None, help="Defaults to the newest snapshot.")
+@click.option(
+    "--root",
+    type=click.Path(file_okay=False, path_type=Path),
+    default=Path("data/crucible"),
+    show_default=True,
+)
+def verify_snapshot_cmd(dataset: str, snapshot_id: str | None, root: Path) -> None:
+    """Check that on-disk content still matches a pinned snapshot; exit 1 if not."""
+    records = list_snapshots(root, dataset)
+    if snapshot_id is not None:
+        records = [r for r in records if r["snapshot_id"] == snapshot_id]
+    if not records:
+        raise click.UsageError(f"no snapshots found for {dataset!r}")
+    record = records[-1]
+    ok, detail = verify_snapshot(Catalog(root), record)
+    click.echo(
+        json.dumps(
+            {
+                "snapshot_id": record["snapshot_id"],
+                "stage": record["stage"],
+                "ok": ok,
+                "detail": detail,
+            },
+            indent=2,
+        )
+    )
+    if not ok:
+        raise SystemExit(1)
+
+
+@main.command()
+@click.option("--dataset", default=None, help="Show upstream ancestry of e.g. silver/synth.")
+@click.option("--mermaid", is_flag=True, default=False, help="Print a Mermaid diagram.")
+@click.option(
+    "--root",
+    type=click.Path(file_okay=False, path_type=Path),
+    default=Path("data/crucible"),
+    show_default=True,
+)
+def lineage(dataset: str | None, mermaid: bool, root: Path) -> None:
+    """Show the lineage graph recorded by ingest/promote/dedup runs."""
+    graph = LineageGraph.from_root(root)
+    if mermaid:
+        click.echo(graph.to_mermaid())
+        return
+    payload: dict[str, object] = {
+        "datasets": sorted(graph.datasets),
+        "jobs": sorted(graph.jobs),
+        "edges": [f"{a} -> {b}" for a, b in graph.edges()],
+    }
+    if dataset is not None:
+        payload["upstream_of_" + dataset] = sorted(graph.upstream(dataset))
+    click.echo(json.dumps(payload, indent=2))
 
 
 @main.command(name="dedup")

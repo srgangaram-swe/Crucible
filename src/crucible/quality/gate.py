@@ -22,8 +22,10 @@ from typing import Any
 import pyarrow as pa
 from pydantic import BaseModel, Field, field_validator
 
+from crucible.lineage import dataset_ref, emit_event
 from crucible.quality.rules import RULES, evaluate_text
 from crucible.storage import Catalog, Layer
+from crucible.versioning import build_manifest, snapshot_stage
 
 
 class QualityConfig(BaseModel):
@@ -113,7 +115,19 @@ def run_gate(
             f"{duplicate_id_rows} duplicate-id rows promoted as-is; removal is dedup's job"
         )
 
+    bronze_manifest = build_manifest(catalog, Layer.BRONZE, dataset)
     if reject_rate > cfg.max_reject_rate:
+        emit_event(
+            catalog.root,
+            job=f"promote:{dataset}",
+            inputs=[
+                dataset_ref(
+                    f"bronze/{dataset}", bronze_manifest.content_hash, bronze_manifest.n_rows
+                )
+            ],
+            outputs=[],
+            facets={"verdict": "blocked", "reject_rate": round(reject_rate, 4)},
+        )
         return GateResult(
             dataset=dataset,
             verdict="blocked",
@@ -143,6 +157,25 @@ def run_gate(
     quarantine_parts = catalog.replace_dataset(
         quarantine_table, Layer.QUARANTINE, dataset, cfg.part_rows
     )
+
+    outputs = []
+    for out_layer, n_parts in ((Layer.SILVER, silver_parts), (Layer.QUARANTINE, quarantine_parts)):
+        if n_parts:
+            manifest = build_manifest(catalog, out_layer, dataset)
+            outputs.append(
+                dataset_ref(f"{out_layer.value}/{dataset}", manifest.content_hash, manifest.n_rows)
+            )
+    emit_event(
+        catalog.root,
+        job=f"promote:{dataset}",
+        inputs=[
+            dataset_ref(f"bronze/{dataset}", bronze_manifest.content_hash, bronze_manifest.n_rows)
+        ],
+        outputs=outputs,
+        facets={"verdict": "promoted", "reject_rate": round(reject_rate, 4)},
+    )
+    if silver_parts:
+        snapshot_stage(catalog, "promote", cfg, [bronze_manifest], (Layer.SILVER, dataset))
 
     return GateResult(
         dataset=dataset,

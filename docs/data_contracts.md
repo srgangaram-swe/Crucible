@@ -125,7 +125,24 @@ config + result, machine-readable) and `.md` (human summary). Reports describe
 the current promotion only; historical gate runs are reconstructable from
 config + bronze.
 
+## Metadata plane
+
+Alongside the layers, the catalog root holds operational metadata (never part
+of dataset identity):
+
+```text
+data/crucible/
+  versions/<dataset>/<stage>-<snapshot_id>.json   # version snapshots
+  lineage/events.jsonl                            # OpenLineage-style run events
+  reports/{quality,dedup}/<dataset>.{json,md}     # stage reports
+```
+
+Dataset identity is the manifest content hash (sorted part-name:file-sha256
+lines). A snapshot pins `(stage, config hash, input hashes, code version,
+output hash)`; `crucible verify-snapshot` checks disk against the pin. See
+[lineage.md](lineage.md).
+
 ## Gold (planned)
 
 Gold will contain curated mixtures and sharding-ready datasets. Its contract
-will be added when Phase 4+ ships.
+will be added when Phase 6 ships.
