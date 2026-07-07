@@ -33,7 +33,9 @@ from pydantic import BaseModel, Field
 
 from crucible import __version__
 from crucible.ingest.sources import Source
+from crucible.lineage import dataset_ref, emit_event
 from crucible.storage import Catalog, Layer, table_content_hash
+from crucible.versioning import build_manifest
 
 _LOG_NAME = "_ingest_log.jsonl"
 
@@ -161,7 +163,7 @@ def land(
             parts_written += 1
             rows_written += table.num_rows
 
-    return IngestResult(
+    result = IngestResult(
         dataset=dataset,
         layer=Layer.BRONZE.value,
         parts_written=parts_written,
@@ -169,3 +171,13 @@ def land(
         rows_written=rows_written,
         rows_skipped=rows_skipped,
     )
+    if catalog.parts(Layer.BRONZE, dataset):
+        manifest = build_manifest(catalog, Layer.BRONZE, dataset)
+        emit_event(
+            catalog.root,
+            job=f"ingest:{dataset}",
+            inputs=[{"namespace": "external", "name": source_name, "facets": {}}],
+            outputs=[dataset_ref(f"bronze/{dataset}", manifest.content_hash, manifest.n_rows)],
+            facets={"rows_written": rows_written, "parts_skipped": parts_skipped},
+        )
+    return result
