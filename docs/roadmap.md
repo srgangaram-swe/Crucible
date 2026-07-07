@@ -44,13 +44,17 @@ tests, docs, and smoke path for that phase are present.
   seed-42 corpus: exact recall 1.0 at every threshold, F1 0.79 at 0.5,
   precision 1.0 at 0.6 — full curve in docs/dedup.md.
 
-## Next
-
 ### Phase 4: Versioning and Lineage
 
-- Content-addressed dataset manifests.
-- Reproducible version snapshots from configs, input hashes, and code version.
-- Lineage graph for promotions and derived artifacts.
+- Content-addressed dataset manifests (sorted part:sha256 lines).
+- Snapshots pinning (stage, config hash, input hashes, code version, output
+  hash), written automatically by promote/dedup; `crucible versions` and
+  `crucible verify-snapshot` (stale pins fail loudly).
+- OpenLineage-style events from every stage; `crucible lineage` graph with
+  upstream ancestry and Mermaid rendering.
+- Smoke-proven byte-identical rebuild of silver in a fresh catalog.
+
+## Next
 
 ### Phase 5: Feature Layer
 

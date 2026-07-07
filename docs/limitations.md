@@ -29,6 +29,10 @@ a large-scale study. Specifically:
   all trivially detectable would make every reported metric meaningless. Some dedup "false
   positives" are actually unlabeled accidental template collisions; these are counted
   separately (`fp_unlabeled_exact`) instead of being forgiven.
+- **Lineage is a local file, not a service.** Events are OpenLineage-inspired JSONL in the
+  catalog root, folded into a graph at read time; they are not validated against the
+  OpenLineage JSON schema and there is no server/UI (the emitter could target Marquez
+  later). Snapshot verification checks content hashes, not a cryptographic audit trail.
 - **Promote-then-dedup ordering is by convention until Phase 7.** Re-running `crucible
   promote` after `crucible dedup` resurrects duplicates; the DAG runner will encode the
   ordering.
