@@ -54,13 +54,15 @@ tests, docs, and smoke path for that phase are present.
   upstream ancestry and Mermaid rendering.
 - Smoke-proven byte-identical rebuild of silver in a fresh catalog.
 
-## Next
-
 ### Phase 5: Feature Layer
 
-- Point-in-time joins.
-- Leakage guards.
-- Feature materialization metadata.
+- Materialized feature views (Parquet + JSON metadata) under the catalog root.
+- Point-in-time joins via DuckDB ASOF (inclusive as-of bound), with an
+  always-on leakage guard raising on any future-dated attachment.
+- Offline/online parity: `get_latest` equals the PIT join at t = infinity.
+- Cumulative source-rollup demo features, PIT-joined in every smoke run.
+
+## Next
 
 ### Phase 6: Training Shards and Reference Trainer
 

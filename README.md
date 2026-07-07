@@ -33,8 +33,8 @@ refinement, and the `assay` experiment harness measures the purity of what comes
 
 ## Status
 
-**Phase 4 of 8** - ingestion, the quality gate, deduplication, and versioning/lineage are
-shipped. The pipeline runs synthetic data → bronze (batch or streamed) → quality gate →
+**Phase 5 of 8** - ingestion, the quality gate, deduplication, versioning/lineage, and the
+point-in-time feature layer are shipped. The pipeline runs synthetic data → bronze (batch or streamed) → quality gate →
 silver + quarantine → exact + MinHash/LSH dedup, with every stage scored against planted
 ground truth, every run recorded as a lineage event, and every promote/dedup pinned by a
 verifiable content-addressed snapshot — the smoke test rebuilds silver **byte-identically**
@@ -50,7 +50,7 @@ is planned.
 | 2 | Quality gates, quarantine, drift detection, measured gate scoring, reports | done |
 | 3 | Exact + MinHash/LSH deduplication with measured precision/recall and threshold sweep | done |
 | 4 | Content-addressed manifests, verifiable version snapshots, lineage graph | done |
-| 5 | Feature layer with point-in-time joins + leakage guards | planned |
+| 5 | Feature layer with point-in-time joins, leakage guards, offline/online parity | done |
 | 6 | Training-shard builder + DDP/FSDP reference trainer | planned |
 | 7 | Orchestration DAG, FastAPI service, Streamlit dashboard | planned |
 | 8 | Research harness + capstone data-centric study + docs | planned |
