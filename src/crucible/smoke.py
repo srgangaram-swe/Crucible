@@ -1,11 +1,12 @@
 """End-to-end smoke check: proves the offline path works on this machine.
 
-Phase 0 scope: generate the synthetic corpus twice, verify byte-for-byte
-determinism, verify ground-truth invariants, round-trip through Parquet,
-and query it back with DuckDB. Later phases extend this to the full
-ingest -> validate -> dedup -> version -> shard -> train pipeline; ``make
-smoke`` must always exercise everything that exists so far, on CPU, with
-no external services, in about a minute.
+Current scope (Phase 1): generate the synthetic corpus, verify determinism
+and ground-truth invariants, then land it in bronze through BOTH ingestion
+paths — batch JSONL and the in-memory streaming broker — and verify
+idempotency and cross-path equivalence via DuckDB. Later phases extend
+this to validate -> dedup -> version -> shard -> train; ``make smoke``
+must always exercise everything that exists so far, on CPU, with no
+external services, in about a minute.
 """
 
 from __future__ import annotations
@@ -17,6 +18,8 @@ from typing import Any
 
 import duckdb
 
+from crucible.ingest import InMemoryBroker, JsonlSource, StreamSource, land, replay_jsonl
+from crucible.storage import Catalog
 from crucible.synth import (
     SynthConfig,
     corpus_sha256,
@@ -94,13 +97,41 @@ def run_smoke(workdir: Path | None = None) -> dict[str, Any]:
     _check(n_ids == len(records), "duckdb distinct-id count mismatch")
     checks.append("parquet_duckdb_roundtrip")
 
+    # 4. Batch ingest to bronze; re-ingest must be a no-op.
+    catalog = Catalog(workdir / "catalog")
+    first = land(JsonlSource(jsonl_path, batch_size=97), catalog, "synth", "smoke-batch")
+    _check(first.rows_written == len(records), "batch ingest lost or duplicated rows")
+    again = land(JsonlSource(jsonl_path, batch_size=97), catalog, "synth", "smoke-batch")
+    _check(
+        again.parts_written == 0 and again.rows_skipped == len(records),
+        "re-ingest was not idempotent",
+    )
+    checks.append("bronze_batch_ingest_idempotent")
+
+    # 5. Streaming fallback path lands the same content.
+    broker = InMemoryBroker()
+    published = replay_jsonl(jsonl_path, broker, "synth")
+    _check(published == len(records), "replay did not publish every record")
+    stream = StreamSource(broker, "synth", batch_size=113, poll_timeout=0.05)
+    streamed = land(stream, catalog, "synth_stream", "smoke-stream")
+    _check(streamed.rows_written == len(records), "stream ingest lost or duplicated rows")
+    diff = catalog.query(
+        "SELECT count(*) AS n FROM ("
+        "  (SELECT id FROM bronze_synth EXCEPT SELECT id FROM bronze_synth_stream)"
+        "  UNION ALL"
+        "  (SELECT id FROM bronze_synth_stream EXCEPT SELECT id FROM bronze_synth))"
+    )
+    _check(diff == [{"n": 0}], "batch and stream paths landed different content")
+    checks.append("bronze_stream_fallback_equivalent")
+
     report = generation_report(_SMOKE_CONFIG, records)
     return {
         "ok": True,
-        "phase": 0,
+        "phase": 1,
         "checks_passed": checks,
         "elapsed_s": round(time.perf_counter() - started, 3),
         "corpus_sha256": digest,
         "by_source_via_duckdb": by_source,
+        "bronze": catalog.summary().get("bronze", {}),
         "generation": report,
     }

@@ -12,7 +12,14 @@ dist/
 .mypy_cache/
 .ruff_cache/
 .coverage
+.coverage.*
+coverage.xml
 htmlcov/
+
+# Local environment files
+.env
+.env.*
+!.env.example
 
 # Data workspaces (pipeline outputs live here, never committed)
 data/

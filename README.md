@@ -33,13 +33,15 @@ refinement, and the `assay` experiment harness measures the purity of what comes
 
 ## Status
 
-**Phase 0 of 8** — scaffold, tooling, CI, synthetic data generator, smoke path. The roadmap
-below is honest about what exists versus what is planned.
+**Phase 1 of 8** - bronze ingestion is shipped. The CLI can generate synthetic data, land
+batch or in-memory-streamed sources into bronze Parquet parts, query those parts through
+DuckDB views, and run an offline smoke check through both ingestion paths. The roadmap below
+is honest about what exists versus what is planned.
 
 | Phase | Subsystem | Status |
 |---|---|---|
-| 0 | Scaffold, CI, CLI, synthetic corpus generator, smoke test | ✅ done |
-| 1 | Ingestion (batch + streaming w/ in-memory fallback) → bronze/silver/gold + DuckDB | 🔜 next |
+| 0 | Scaffold, CI, CLI, synthetic corpus generator | done |
+| 1 | Batch + streaming ingestion to bronze, local catalog, DuckDB SQL, smoke through bronze | done |
 | 2 | Quality gates, quarantine, drift detection, reports | planned |
 | 3 | Exact + MinHash/LSH deduplication with measured rates | planned |
 | 4 | Content-addressed versioning, manifests, lineage graph | planned |
@@ -54,7 +56,7 @@ below is honest about what exists versus what is planned.
 git clone https://github.com/srgangaram-swe/Crucible && cd Crucible
 make install          # creates .venv and installs crucible + dev tools
 make smoke            # end-to-end offline check (~seconds on CPU)
-make test lint type   # full quality gate
+make gate             # lint + type + tests + coverage + smoke
 ```
 
 Generate a synthetic corpus with known, labeled defects (duplicates, near-duplicates, junk,
@@ -67,6 +69,21 @@ synthetic PII) — the substrate for every test and experiment in the repo:
 Every record carries evaluation-only ground truth (`gt_kind`, `gt_dup_of`), so downstream
 stages can report *measured* precision/recall for dedup and quality gates instead of vibes.
 
+Land that corpus into bronze and inspect it through the local catalog:
+
+```bash
+.venv/bin/crucible ingest --input data/raw/synth/corpus.jsonl --dataset synth
+.venv/bin/crucible catalog
+.venv/bin/crucible sql "SELECT source, count(*) AS n FROM bronze_synth GROUP BY source"
+```
+
+The same JSONL input can be replayed through the in-memory broker to exercise the streaming
+path without Kafka:
+
+```bash
+.venv/bin/crucible ingest --input data/raw/synth/corpus.jsonl --dataset synth_stream --via-stream
+```
+
 ## Design principles
 
 - **Local-first, then scale.** The default path needs no Docker, no network, no GPU. Optional
@@ -75,6 +92,9 @@ stages can report *measured* precision/recall for dedup and quality gates instea
   seed; datasets are identified by content hash.
 - **Measured, not claimed.** Reported numbers come from runs you can re-execute; illustrative
   numbers are labeled as such. See [docs/limitations.md](docs/limitations.md).
+- **Contracts before cleverness.** Layer semantics, catalog layout, and CLI behavior are
+  documented in [docs/data_contracts.md](docs/data_contracts.md) before later phases build on
+  them.
 
 ## Repository layout
 
@@ -82,7 +102,7 @@ stages can report *measured* precision/recall for dedup and quality gates instea
 src/crucible/       the package (CLI: `crucible`)
 tests/              pytest suite (unit + integration; `make test`)
 configs/            YAML configs — every pipeline/experiment is driven by one
-docs/               architecture, data contracts, lineage, experiments, limitations
+docs/               architecture, data contracts, roadmap, changelog, limitations
 ```
 
 ## License

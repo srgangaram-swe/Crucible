@@ -5,7 +5,7 @@ PYTHON ?= python3
 VENV ?= .venv
 BIN := $(VENV)/bin
 
-.PHONY: install lint format type test smoke clean hooks
+.PHONY: install lint format type test coverage smoke gate clean hooks
 
 $(VENV)/pyvenv.cfg:
 	$(PYTHON) -m venv $(VENV)
@@ -31,8 +31,13 @@ type:  ## mypy (strict)
 test:  ## Unit + integration tests
 	$(BIN)/pytest
 
+coverage:  ## Unit + integration tests with the configured coverage gate
+	$(BIN)/pytest --cov=crucible --cov-report=term-missing
+
 smoke:  ## End-to-end pipeline on bundled tiny synthetic data (CPU, offline)
 	$(BIN)/crucible smoke
+
+gate: install lint type test coverage smoke  ## Full local quality gate
 
 clean:
 	rm -rf $(VENV) build dist *.egg-info .pytest_cache .mypy_cache .ruff_cache
