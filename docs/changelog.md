@@ -2,6 +2,17 @@
 
 Format follows [Keep a Changelog](https://keepachangelog.com/); versions follow SemVer.
 
+## [0.6.0] - 2026-07-06 — Phase 5: feature layer
+
+### Added
+
+- `crucible.features`: materialized feature views; point-in-time joins via
+  DuckDB ASOF with an always-on leakage guard (`assert_no_leakage` raises
+  `LeakageError` on any future-dated attachment); offline/online parity
+  (`get_latest` == PIT join at t=∞, tested); cumulative source-rollup demo
+  features. Smoke stage 12 PIT-joins a 100-row spine, leak-checked, every
+  run; docs/features.md.
+
 ## [0.5.0] - 2026-07-06 — Phase 4: versioning & lineage
 
 ### Added

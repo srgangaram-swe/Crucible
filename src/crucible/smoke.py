@@ -23,6 +23,7 @@ import duckdb
 from crucible.assay import score_dedup, score_gate
 from crucible.dedup import DedupConfig, run_dedup
 from crucible.dedup.pipeline import write_dedup_report
+from crucible.features import FeatureStore, source_rollup_features
 from crucible.ingest import InMemoryBroker, JsonlSource, StreamSource, land, replay_jsonl
 from crucible.lineage import LineageGraph
 from crucible.quality import QualityConfig, drift_report, run_gate, write_report
@@ -214,10 +215,25 @@ def run_smoke(workdir: Path | None = None) -> dict[str, Any]:
     _check(original_hash == rebuilt_hash, "rebuild produced different silver content")
     checks.append("byte_identical_rebuild")
 
+    # 12. Feature layer: PIT-correct join over cumulative source rollups.
+    # assert_no_leakage runs inside the join; a leak raises immediately.
+    store = FeatureStore(catalog)
+    silver = catalog.read(Layer.SILVER, "synth")
+    store.register("source_stats", source_rollup_features(silver), "source", "timestamp")
+    spine = silver.select(["id", "source", "timestamp"]).slice(0, 100)
+    joined = store.point_in_time_join(spine, "source_stats", "source", "timestamp")
+    _check(joined.num_rows == spine.num_rows, "PIT join changed spine row count")
+    docs_so_far = joined.column("source_stats__docs_so_far").to_pylist()
+    _check(
+        all(value is not None and value >= 1 for value in docs_so_far),
+        "PIT join failed to attach each row's own-as-of features",
+    )
+    checks.append("features_pit_join_leak_free")
+
     report = generation_report(_SMOKE_CONFIG, records)
     return {
         "ok": True,
-        "phase": 4,
+        "phase": 5,
         "checks_passed": checks,
         "elapsed_s": round(time.perf_counter() - started, 3),
         "corpus_sha256": digest,
@@ -243,5 +259,6 @@ def run_smoke(workdir: Path | None = None) -> dict[str, Any]:
             "silver_content_hash": original_hash,
             "rebuild_matches": True,
         },
+        "features": {"views": store.views(), "pit_joined_rows": joined.num_rows},
         "generation": report,
     }

@@ -1,11 +1,12 @@
 # Architecture
 
-> Status: Phase 4. Bronze ingestion, medallion storage, DuckDB catalog views, the quality
+> Status: Phase 5. Bronze ingestion, medallion storage, DuckDB catalog views, the quality
 > gate (bronze→silver with quarantine), PSI drift detection, exact + MinHash/LSH dedup,
-> ground-truth scoring of both stages, content-addressed version snapshots, and the lineage
-> graph are shipped, all exercised by the offline smoke path (including a byte-identical
-> rebuild check). Sections for unbuilt subsystems are design intent, not documentation of
-> shipped code; see [roadmap.md](roadmap.md) for phase status.
+> ground-truth scoring of both stages, content-addressed version snapshots, the lineage
+> graph, and the point-in-time feature layer are shipped, all exercised by the offline
+> smoke path (including a byte-identical rebuild check and a leak-checked PIT join).
+> Sections for unbuilt subsystems are design intent, not documentation of shipped code;
+> see [roadmap.md](roadmap.md) for phase status.
 
 ## System overview
 
@@ -86,7 +87,7 @@ flowchart LR
 | `crucible.dedup` | 3 | Exact + MinHash/LSH near-dup removal (shipped) |
 | `crucible.versioning` | 4 | Manifests + verifiable snapshots (shipped) |
 | `crucible.lineage` | 4 | Run events + queryable lineage graph (shipped) |
-| `crucible.features` | 5 | Offline feature store, PIT joins, leakage guards |
+| `crucible.features` | 5 | Offline feature store, PIT joins, leakage guards (shipped) |
 | `crucible.shards` | 6 | Tokenization, deterministic sharding, resumable iteration |
 | `crucible.train` | 6 | Reference transformer + DDP/FSDP entrypoints |
 | `crucible.orchestrate` | 7 | DAG runner (idempotent, retryable tasks) |
