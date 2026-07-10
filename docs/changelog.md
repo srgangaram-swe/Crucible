@@ -2,9 +2,15 @@
 
 Format follows [Keep a Changelog](https://keepachangelog.com/); versions follow SemVer.
 
-## Unreleased (Phase 6 sprint, targets v0.7.0)
+## [0.7.0] - 2026-07-09 — Phase 6: training shards + reference trainer
 
 ### Added
+
+- `crucible.bench` (#8): end-to-end stage-throughput runner writing
+  host-tagged JSON to benchmarks/results/ (`make bench`). Reference run,
+  5000 docs on an arm64 laptop CPU: ingest 30.6k rows/s, gate 18.7k rows/s,
+  dedup 3.3k rows/s, shard build 5.2M tokens/s, shard read 7.6M tokens/s,
+  trainer 168k tokens/s.
 
 - `crucible.train` (#7): reference decoder-only transformer (d_model 64,
   2 layers, byte vocab) behind the `train` extra; deterministic seeded

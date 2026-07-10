@@ -11,6 +11,7 @@ import click
 from crucible import __version__
 from crucible.assay import score_dedup, score_gate, sweep_dedup_thresholds
 from crucible.assay.scoring import GroundTruthUnavailable
+from crucible.bench import run_bench
 from crucible.config import load_config
 from crucible.dedup import DedupConfig, run_dedup
 from crucible.dedup.pipeline import write_dedup_report
@@ -414,6 +415,27 @@ def drift(dataset: str, against: str, layer: str, root: Path) -> None:
     reference = profile_table(cat.read(Layer(layer), dataset))
     current = profile_table(cat.read(Layer(layer), against))
     click.echo(json.dumps(drift_report(reference, current), indent=2))
+
+
+@main.command()
+@click.option("--n-docs", type=int, default=5000, show_default=True)
+@click.option("--seq-len", type=int, default=256, show_default=True)
+@click.option("--train-steps", type=int, default=30, show_default=True)
+@click.option(
+    "--out",
+    "out_dir",
+    type=click.Path(file_okay=False, path_type=Path),
+    default=Path("benchmarks/results"),
+    show_default=True,
+)
+def bench(n_docs: int, seq_len: int, train_steps: int, out_dir: Path) -> None:
+    """Measure end-to-end stage throughput; writes a JSON report."""
+    click.echo(
+        json.dumps(
+            run_bench(n_docs=n_docs, seq_len=seq_len, train_steps=train_steps, out_dir=out_dir),
+            indent=2,
+        )
+    )
 
 
 @main.command()

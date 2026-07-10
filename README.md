@@ -33,8 +33,11 @@ refinement, and the `assay` experiment harness measures the purity of what comes
 
 ## Status
 
-**Phase 5 of 8** - ingestion, the quality gate, deduplication, versioning/lineage, and the
-point-in-time feature layer are shipped. The pipeline runs synthetic data → bronze (batch or streamed) → quality gate →
+**Phase 6 of 8** - ingestion, the quality gate, deduplication, versioning/lineage, the
+point-in-time feature layer, and the training path (deterministic shards + CPU/DDP/FSDP
+reference trainer with exact checkpoint resume) are shipped. Measured on a laptop CPU
+(see benchmarks/): shard build 5.2M tokens/s, shard read 7.6M tokens/s, trainer ~168k
+tokens/s with loss 5.72→2.78 over 30 steps. The pipeline runs synthetic data → bronze (batch or streamed) → quality gate →
 silver + quarantine → exact + MinHash/LSH dedup, with every stage scored against planted
 ground truth, every run recorded as a lineage event, and every promote/dedup pinned by a
 verifiable content-addressed snapshot — the smoke test rebuilds silver **byte-identically**
@@ -51,7 +54,7 @@ is planned.
 | 3 | Exact + MinHash/LSH deduplication with measured precision/recall and threshold sweep | done |
 | 4 | Content-addressed manifests, verifiable version snapshots, lineage graph | done |
 | 5 | Feature layer with point-in-time joins, leakage guards, offline/online parity | done |
-| 6 | Training-shard builder + DDP/FSDP reference trainer | planned |
+| 6 | Deterministic training shards, resumable reader, CPU/DDP/FSDP reference trainer, benchmarks | done |
 | 7 | Orchestration DAG, FastAPI service, Streamlit dashboard | planned |
 | 8 | Research harness + capstone data-centric study + docs | planned |
 

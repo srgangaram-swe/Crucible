@@ -5,4 +5,4 @@ come out — with lineage for every step and an experiment harness to measure
 what each refining stage buys you downstream.
 """
 
-__version__ = "0.6.0"
+__version__ = "0.7.0"
