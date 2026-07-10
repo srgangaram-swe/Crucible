@@ -1,0 +1,51 @@
+{
+  "kind": "crucible-bench",
+  "created_at": "2026-07-10T02:13:01.890463+00:00",
+  "crucible_version": "0.6.0",
+  "host": {
+    "platform": "macOS-15.5-arm64-arm-64bit-Mach-O",
+    "python": "3.13.11",
+    "machine": "arm64"
+  },
+  "config": {
+    "n_docs": 5000,
+    "seq_len": 256,
+    "train_steps": 30,
+    "seed": 0
+  },
+  "corpus": {
+    "rows": 5000,
+    "silver_rows": 2792,
+    "sequences": 5733,
+    "tokens": 1473381
+  },
+  "stages": {
+    "ingest_rows": {
+      "elapsed_s": 0.1636,
+      "per_second": 30559.9
+    },
+    "gate_rows": {
+      "elapsed_s": 0.2671,
+      "per_second": 18722.5
+    },
+    "dedup_rows": {
+      "elapsed_s": 1.3536,
+      "per_second": 3324.4
+    },
+    "shard_build_tokens": {
+      "elapsed_s": 0.2822,
+      "per_second": 5220796.5
+    },
+    "shard_read_tokens": {
+      "elapsed_s": 0.1933,
+      "per_second": 7621205.6
+    },
+    "train": {
+      "steps": 30,
+      "tokens_per_second": 168154.7,
+      "elapsed_s": 0.365,
+      "device": "cpu",
+      "final_loss": 2.776
+    }
+  }
+}
