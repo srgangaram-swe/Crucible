@@ -2,6 +2,18 @@
 
 Format follows [Keep a Changelog](https://keepachangelog.com/); versions follow SemVer.
 
+## Unreleased (Phase 6 sprint, targets v0.7.0)
+
+### Added
+
+- `crucible.shards` (#6): byte-level tokenizer (vocab 259, zero deps),
+  deterministic packing of silver into `gold/<dataset>_shards` Parquet
+  sequence parts (id-sorted then seed-permuted document order), lineage
+  event + `shard` version snapshot per build; `ShardReader` with seeded
+  per-epoch shuffle buffers and exact `(epoch, consumed)` resume. Smoke
+  stage 13 (`gold_shards_resumable`) proves head + resumed tail == full
+  epoch; rebuild determinism tested across fresh catalogs.
+
 ## [0.6.0] - 2026-07-06 — Phase 5: feature layer
 
 ### Added

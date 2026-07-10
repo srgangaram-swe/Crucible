@@ -28,6 +28,7 @@ from crucible.ingest import InMemoryBroker, JsonlSource, StreamSource, land, rep
 from crucible.lineage import LineageGraph
 from crucible.quality import QualityConfig, drift_report, run_gate, write_report
 from crucible.quality.drift import profile_table
+from crucible.shards import ShardConfig, ShardReader, build_shards
 from crucible.storage import Catalog, Layer
 from crucible.synth import (
     SynthConfig,
@@ -230,6 +231,22 @@ def run_smoke(workdir: Path | None = None) -> dict[str, Any]:
     )
     checks.append("features_pit_join_leak_free")
 
+    # 13. Training shards: silver -> gold packed sequences, exact resume.
+    shard_cfg = ShardConfig(seq_len=128, sequences_per_shard=64)
+    shard_result = build_shards(catalog, "synth", shard_cfg)
+    _check(shard_result.n_sequences > 0, "shard builder produced no sequences")
+    reader = ShardReader(catalog, "synth_shards", seed=0, shuffle_buffer=32)
+    full_epoch = list(reader.iterate(epoch=0))
+    _check(
+        len(full_epoch) == shard_result.n_sequences,
+        "shard reader lost or duplicated sequences",
+    )
+    interrupted = reader.iterate(epoch=0)
+    head = [next(interrupted) for _ in range(5)]
+    tail = list(reader.iterate(epoch=0, resume_state=interrupted.state()))
+    _check(head + tail == full_epoch, "shard-reader resume is not exact")
+    checks.append("gold_shards_resumable")
+
     report = generation_report(_SMOKE_CONFIG, records)
     return {
         "ok": True,
@@ -260,5 +277,11 @@ def run_smoke(workdir: Path | None = None) -> dict[str, Any]:
             "rebuild_matches": True,
         },
         "features": {"views": store.views(), "pit_joined_rows": joined.num_rows},
+        "shards": {
+            "n_sequences": shard_result.n_sequences,
+            "n_tokens": shard_result.n_tokens,
+            "shard_parts": shard_result.shard_parts,
+            "vocab_size": shard_result.vocab_size,
+        },
         "generation": report,
     }
