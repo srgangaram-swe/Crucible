@@ -95,9 +95,9 @@ target-version = ["py311"]
 strict = true
 warn_unreachable = true
 files = ["src"]
-# pyarrow ships py.typed but large parts of its API are untyped; keep strict
-# checking for our code while allowing calls into pyarrow.
-untyped_calls_exclude = ["pyarrow"]
+# pyarrow and torch ship py.typed but parts of their APIs are untyped; keep
+# strict checking for our code while allowing calls into them.
+untyped_calls_exclude = ["pyarrow", "torch"]
 
 [[tool.mypy.overrides]]
 module = ["duckdb.*", "pyarrow.*"]
@@ -105,7 +105,7 @@ ignore_missing_imports = true
 implicit_reexport = true
 
 [[tool.mypy.overrides]]
-module = ["confluent_kafka.*", "datasets.*", "datasketch.*"]
+module = ["confluent_kafka.*", "datasets.*", "datasketch.*", "torch.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

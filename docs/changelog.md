@@ -6,6 +6,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/); versions follow 
 
 ### Added
 
+- `crucible.train` (#7): reference decoder-only transformer (d_model 64,
+  2 layers, byte vocab) behind the `train` extra; deterministic seeded
+  training over ShardReader with exact checkpoint resume (train(20) ==
+  train(10)+resume(10), tested); DDP/FSDP torchrun entrypoints with
+  rank-round-robin data sharding and a 2-process gloo loss-parity test
+  (opt-in via CRUCIBLE_RUN_DDP=1, verified locally); smoke stage 14 trains
+  12 CPU steps when torch is present and self-skips loudly when not; CI
+  gains a torch-CPU `train` job while the main gate stays torch-free.
+
 - `crucible.shards` (#6): byte-level tokenizer (vocab 259, zero deps),
   deterministic packing of silver into `gold/<dataset>_shards` Parquet
   sequence parts (id-sorted then seed-permuted document order), lineage

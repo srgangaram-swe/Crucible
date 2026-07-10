@@ -247,6 +247,31 @@ def run_smoke(workdir: Path | None = None) -> dict[str, Any]:
     _check(head + tail == full_epoch, "shard-reader resume is not exact")
     checks.append("gold_shards_resumable")
 
+    # 14. Reference trainer: a few CPU steps when the train extra is present.
+    # Core stays torch-free; this stage self-skips (and says so) without it.
+    train_report: dict[str, Any] | None = None
+    try:
+        import torch  # noqa: F401
+
+        has_torch = True
+    except ImportError:
+        has_torch = False
+    if has_torch:
+        from crucible.train import TrainConfig, train
+
+        train_result = train(
+            catalog,
+            TrainConfig(shards_dataset="synth_shards", steps=12, batch_size=8, seed=0),
+        )
+        _check(
+            train_result.final_loss < train_result.initial_loss,
+            f"loss did not decrease ({train_result.initial_loss} -> {train_result.final_loss})",
+        )
+        train_report = train_result.as_dict()
+        checks.append("trainer_cpu_loss_decreases")
+    else:
+        checks.append("trainer_skipped_no_torch")
+
     report = generation_report(_SMOKE_CONFIG, records)
     return {
         "ok": True,
@@ -283,5 +308,6 @@ def run_smoke(workdir: Path | None = None) -> dict[str, Any]:
             "shard_parts": shard_result.shard_parts,
             "vocab_size": shard_result.vocab_size,
         },
+        "train": train_report,
         "generation": report,
     }
