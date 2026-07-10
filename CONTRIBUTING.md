@@ -30,6 +30,19 @@ make gate      # lint + types + tests + coverage + smoke — must pass before a 
   `refactor:`, `perf:`, `chore:`), small and reviewable. One feature branch
   per phase/topic; CI must be green to merge.
 
+## Branching model
+
+- **`prod`** — release branch. Only merge commits from `main` that correspond
+  to tagged, CI-green releases land here; `prod` is always deployable.
+- **`main`** — integration trunk (default branch). Feature PRs merge here
+  after CI passes; phase releases are tagged from `main`.
+- **`dev`** — sprint branch for the active milestone. Feature branches
+  (`feat/<phase>-<topic>`) branch from and PR back into `dev`; at the end of
+  a sprint, `dev` merges to `main` via PR, is tagged, and `main` fast-forwards
+  into `prod`.
+- Work items live as GitHub issues grouped by milestone (one milestone per
+  phase); every PR references its issue (`Closes #N`).
+
 ## Tests
 
 `pytest` for unit + integration; new modules need both happy-path and failure
