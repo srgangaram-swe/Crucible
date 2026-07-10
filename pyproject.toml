@@ -108,6 +108,12 @@ implicit_reexport = true
 module = ["confluent_kafka.*", "datasets.*", "datasketch.*", "torch.*"]
 ignore_missing_imports = true
 
+# In torch-free environments nn.Module resolves to Any (see the override
+# above); the model class must still be definable there.
+[[tool.mypy.overrides]]
+module = ["crucible.train.model"]
+disallow_subclassing_any = false
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q --strict-markers"
@@ -118,6 +124,10 @@ markers = [
 [tool.coverage.run]
 source = ["src/crucible"]
 branch = true
+# The train package is exercised by the torch CPU CI job (plain pytest);
+# the torch-free coverage gate would count it as dead code. Unifying
+# coverage across both jobs is tracked in issue #21.
+omit = ["*/crucible/train/*"]
 
 [tool.coverage.report]
 fail_under = 95
