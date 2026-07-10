@@ -37,6 +37,9 @@ coverage:  ## Unit + integration tests with the configured coverage gate
 smoke:  ## End-to-end pipeline on bundled tiny synthetic data (CPU, offline)
 	$(BIN)/crucible smoke
 
+bench:  ## Measured stage-throughput run -> benchmarks/results/*.json
+	$(BIN)/crucible bench
+
 gate: install lint type test coverage smoke  ## Full local quality gate
 
 clean:

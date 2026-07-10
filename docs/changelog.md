@@ -2,6 +2,33 @@
 
 Format follows [Keep a Changelog](https://keepachangelog.com/); versions follow SemVer.
 
+## [0.7.0] - 2026-07-09 — Phase 6: training shards + reference trainer
+
+### Added
+
+- `crucible.bench` (#8): end-to-end stage-throughput runner writing
+  host-tagged JSON to benchmarks/results/ (`make bench`). Reference run,
+  5000 docs on an arm64 laptop CPU: ingest 30.6k rows/s, gate 18.7k rows/s,
+  dedup 3.3k rows/s, shard build 5.2M tokens/s, shard read 7.6M tokens/s,
+  trainer 168k tokens/s.
+
+- `crucible.train` (#7): reference decoder-only transformer (d_model 64,
+  2 layers, byte vocab) behind the `train` extra; deterministic seeded
+  training over ShardReader with exact checkpoint resume (train(20) ==
+  train(10)+resume(10), tested); DDP/FSDP torchrun entrypoints with
+  rank-round-robin data sharding and a 2-process gloo loss-parity test
+  (opt-in via CRUCIBLE_RUN_DDP=1, verified locally); smoke stage 14 trains
+  12 CPU steps when torch is present and self-skips loudly when not; CI
+  gains a torch-CPU `train` job while the main gate stays torch-free.
+
+- `crucible.shards` (#6): byte-level tokenizer (vocab 259, zero deps),
+  deterministic packing of silver into `gold/<dataset>_shards` Parquet
+  sequence parts (id-sorted then seed-permuted document order), lineage
+  event + `shard` version snapshot per build; `ShardReader` with seeded
+  per-epoch shuffle buffers and exact `(epoch, consumed)` resume. Smoke
+  stage 13 (`gold_shards_resumable`) proves head + resumed tail == full
+  epoch; rebuild determinism tested across fresh catalogs.
+
 ## [0.6.0] - 2026-07-06 — Phase 5: feature layer
 
 ### Added
