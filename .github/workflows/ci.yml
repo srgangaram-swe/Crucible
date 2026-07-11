@@ -44,5 +44,12 @@ jobs:
       - name: Trainer tests
         run: pytest tests/test_train.py tests/test_shards.py -q
 
+      - name: Forecast unit + integration coverage
+        run: >-
+          pytest tests/test_forecast_data.py tests/test_forecast_metrics.py
+          tests/test_forecast_train.py --cov=crucible.forecast
+          --cov-config=.coveragerc-forecast --cov-report=term-missing
+          --cov-fail-under=90
+
       - name: Smoke incl. trainer stage
         run: crucible smoke

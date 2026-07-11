@@ -1,0 +1,219 @@
+{
+  "comparison_to_persistence": {
+    "baseline_mae": 0.0170233603566885,
+    "mae_skill_score": 0.2747298029060501,
+    "model_beats_baseline_mae": true,
+    "model_mae": 0.012346535921096802
+  },
+  "comparison_to_seasonal_naive": {
+    "baseline_mae": 0.01708732172846794,
+    "mae_skill_score": 0.27744463893793614,
+    "model_beats_baseline_mae": true,
+    "model_mae": 0.012346535921096802
+  },
+  "comparison_to_zero_return": {
+    "baseline_mae": 0.012236076407134533,
+    "mae_skill_score": -0.009027363861332516,
+    "model_beats_baseline_mae": false,
+    "model_mae": 0.012346535921096802
+  },
+  "model": {
+    "directional_accuracy": 0.56953125,
+    "interval_coverage": 0.7546875,
+    "interval_width": 0.0358927845954895,
+    "mae": 0.012346535921096802,
+    "mase": 0.8363632303033565,
+    "mean_pinball_loss": 0.004240035079419613,
+    "per_horizon": [
+      {
+        "directional_accuracy": 0.56640625,
+        "horizon": 1,
+        "mae": 0.012319182977080345,
+        "rmse": 0.017011208459734917
+      },
+      {
+        "directional_accuracy": 0.5625,
+        "horizon": 2,
+        "mae": 0.0123360063880682,
+        "rmse": 0.01706673763692379
+      },
+      {
+        "directional_accuracy": 0.5859375,
+        "horizon": 3,
+        "mae": 0.012246864847838879,
+        "rmse": 0.017078809440135956
+      },
+      {
+        "directional_accuracy": 0.55078125,
+        "horizon": 4,
+        "mae": 0.012525352649390697,
+        "rmse": 0.01699608936905861
+      },
+      {
+        "directional_accuracy": 0.58203125,
+        "horizon": 5,
+        "mae": 0.012305276468396187,
+        "rmse": 0.017260011285543442
+      }
+    ],
+    "pinball_by_quantile": {
+      "q0.1": 0.003670723410323262,
+      "q0.5": 0.006173267960548401,
+      "q0.9": 0.0028761138673871756
+    },
+    "quantile_crossing_rate": 0.0,
+    "rmse": 0.017082830891013145,
+    "smape": 1.485645055770874
+  },
+  "persistence": {
+    "directional_accuracy": 0.5203125,
+    "interval_coverage": 0.0,
+    "interval_width": 0.0,
+    "mae": 0.0170233603566885,
+    "mase": 1.153174683937848,
+    "mean_pinball_loss": 0.00851168017834425,
+    "per_horizon": [
+      {
+        "directional_accuracy": 0.51171875,
+        "horizon": 1,
+        "mae": 0.01694590225815773,
+        "rmse": 0.023329930379986763
+      },
+      {
+        "directional_accuracy": 0.4921875,
+        "horizon": 2,
+        "mae": 0.018046313896775246,
+        "rmse": 0.02457435242831707
+      },
+      {
+        "directional_accuracy": 0.5078125,
+        "horizon": 3,
+        "mae": 0.017012067139148712,
+        "rmse": 0.023088863119482994
+      },
+      {
+        "directional_accuracy": 0.52734375,
+        "horizon": 4,
+        "mae": 0.015974415466189384,
+        "rmse": 0.022137988358736038
+      },
+      {
+        "directional_accuracy": 0.5625,
+        "horizon": 5,
+        "mae": 0.017138106748461723,
+        "rmse": 0.023905962705612183
+      }
+    ],
+    "pinball_by_quantile": {
+      "q0.1": 0.00852346420288086,
+      "q0.5": 0.00851168017834425,
+      "q0.9": 0.00849989615380764
+    },
+    "quantile_crossing_rate": 0.0,
+    "rmse": 0.02342163771390915,
+    "smape": 1.4505773782730103
+  },
+  "persistence_mae_skill_block_bootstrap": {
+    "block_length": 5,
+    "ci_high": 0.31452243219849046,
+    "ci_low": 0.2236311376640006,
+    "observed_skill": 0.2747298029060501,
+    "samples": 1000
+  },
+  "seasonal_naive": {
+    "directional_accuracy": 0.56171875,
+    "interval_coverage": 0.0,
+    "interval_width": 0.0,
+    "mae": 0.01708732172846794,
+    "mase": 1.1575074733014363,
+    "mean_pinball_loss": 0.008543660553793112,
+    "per_horizon": [
+      {
+        "directional_accuracy": 0.56640625,
+        "horizon": 1,
+        "mae": 0.01696624606847763,
+        "rmse": 0.02381124161183834
+      },
+      {
+        "directional_accuracy": 0.5625,
+        "horizon": 2,
+        "mae": 0.017043009400367737,
+        "rmse": 0.023861004039645195
+      },
+      {
+        "directional_accuracy": 0.55859375,
+        "horizon": 3,
+        "mae": 0.017117556184530258,
+        "rmse": 0.023891353979706764
+      },
+      {
+        "directional_accuracy": 0.55859375,
+        "horizon": 4,
+        "mae": 0.017171690240502357,
+        "rmse": 0.02392052672803402
+      },
+      {
+        "directional_accuracy": 0.5625,
+        "horizon": 5,
+        "mae": 0.017138106748461723,
+        "rmse": 0.023905962705612183
+      }
+    ],
+    "pinball_by_quantile": {
+      "q0.1": 0.008609035983681679,
+      "q0.5": 0.00854366086423397,
+      "q0.9": 0.008478284813463688
+    },
+    "quantile_crossing_rate": 0.0,
+    "rmse": 0.023878047242760658,
+    "smape": 1.4118990898132324
+  },
+  "zero_return": {
+    "directional_accuracy": 0.0,
+    "interval_coverage": 0.0,
+    "interval_width": 0.0,
+    "mae": 0.012236076407134533,
+    "mase": 0.8288806233190473,
+    "mean_pinball_loss": 0.006118038048346837,
+    "per_horizon": [
+      {
+        "directional_accuracy": 0.0,
+        "horizon": 1,
+        "mae": 0.012239782139658928,
+        "rmse": 0.017242291942238808
+      },
+      {
+        "directional_accuracy": 0.0,
+        "horizon": 2,
+        "mae": 0.012264546006917953,
+        "rmse": 0.017255086451768875
+      },
+      {
+        "directional_accuracy": 0.0,
+        "horizon": 3,
+        "mae": 0.01224228460341692,
+        "rmse": 0.017245767638087273
+      },
+      {
+        "directional_accuracy": 0.0,
+        "horizon": 4,
+        "mae": 0.012223736383020878,
+        "rmse": 0.01724039763212204
+      },
+      {
+        "directional_accuracy": 0.0,
+        "horizon": 5,
+        "mae": 0.012210036627948284,
+        "rmse": 0.017230743542313576
+      }
+    ],
+    "pinball_by_quantile": {
+      "q0.1": 0.0075609683990478516,
+      "q0.5": 0.0061180382035672665,
+      "q0.9": 0.004675107542425394
+    },
+    "quantile_crossing_rate": 0.0,
+    "rmse": 0.017242860049009323,
+    "smape": 2.0
+  }
+}

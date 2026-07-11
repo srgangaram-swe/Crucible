@@ -1,0 +1,361 @@
+{
+  "code_version": "0.10.0",
+  "config": {
+    "bootstrap_samples": 1000,
+    "n_docs": 240,
+    "parameters": {
+      "thresholds": [
+        0.4,
+        0.5,
+        0.6
+      ]
+    },
+    "seeds": [
+      11,
+      23,
+      37
+    ],
+    "study": "dedup_ablation",
+    "train_tokens": 20000
+  },
+  "config_hash": "437c528d0822",
+  "result_hash": "988aad638f56",
+  "rows": [
+    {
+      "arm": "threshold_0.40",
+      "kept_docs": 163,
+      "loss_code": 3.012222,
+      "loss_forum_qa": 2.578404,
+      "loss_news": 2.471357,
+      "loss_recipes": 2.967444,
+      "removed_docs": 32,
+      "seed": 11,
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.75501
+    },
+    {
+      "arm": "threshold_0.50",
+      "kept_docs": 175,
+      "loss_code": 3.043426,
+      "loss_forum_qa": 2.578832,
+      "loss_news": 2.466722,
+      "loss_recipes": 2.964092,
+      "removed_docs": 20,
+      "seed": 11,
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.765807
+    },
+    {
+      "arm": "threshold_0.60",
+      "kept_docs": 179,
+      "loss_code": 3.154385,
+      "loss_forum_qa": 2.548711,
+      "loss_news": 2.473396,
+      "loss_recipes": 2.960017,
+      "removed_docs": 16,
+      "seed": 11,
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.798816
+    },
+    {
+      "arm": "threshold_0.40",
+      "kept_docs": 153,
+      "loss_code": 2.791964,
+      "loss_forum_qa": 2.733791,
+      "loss_news": 2.50955,
+      "loss_recipes": 2.748162,
+      "removed_docs": 42,
+      "seed": 23,
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.65526
+    },
+    {
+      "arm": "threshold_0.50",
+      "kept_docs": 175,
+      "loss_code": 2.927551,
+      "loss_forum_qa": 2.553804,
+      "loss_news": 2.551126,
+      "loss_recipes": 2.85231,
+      "removed_docs": 20,
+      "seed": 23,
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.631058
+    },
+    {
+      "arm": "threshold_0.60",
+      "kept_docs": 178,
+      "loss_code": 2.927551,
+      "loss_forum_qa": 2.553804,
+      "loss_news": 2.551126,
+      "loss_recipes": 2.85231,
+      "removed_docs": 17,
+      "seed": 23,
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.631058
+    },
+    {
+      "arm": "threshold_0.40",
+      "kept_docs": 146,
+      "loss_code": 2.700353,
+      "loss_forum_qa": 2.721016,
+      "loss_news": 2.539728,
+      "loss_recipes": 2.855377,
+      "removed_docs": 49,
+      "seed": 37,
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.658013
+    },
+    {
+      "arm": "threshold_0.50",
+      "kept_docs": 163,
+      "loss_code": 2.700486,
+      "loss_forum_qa": 2.661277,
+      "loss_news": 2.559622,
+      "loss_recipes": 2.926997,
+      "removed_docs": 32,
+      "seed": 37,
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.661204
+    },
+    {
+      "arm": "threshold_0.60",
+      "kept_docs": 174,
+      "loss_code": 2.700486,
+      "loss_forum_qa": 2.661277,
+      "loss_news": 2.559622,
+      "loss_recipes": 2.926997,
+      "removed_docs": 21,
+      "seed": 37,
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.661204
+    }
+  ],
+  "study": "dedup_ablation",
+  "summary": [
+    {
+      "arm": "threshold_0.40",
+      "ci_high": 163.0,
+      "ci_low": 146.0,
+      "mean": 154.0,
+      "metric": "kept_docs",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.40",
+      "ci_high": 3.012222,
+      "ci_low": 2.700353,
+      "mean": 2.834846,
+      "metric": "loss_code",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.40",
+      "ci_high": 2.733791,
+      "ci_low": 2.578404,
+      "mean": 2.677737,
+      "metric": "loss_forum_qa",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.40",
+      "ci_high": 2.539728,
+      "ci_low": 2.471357,
+      "mean": 2.506878,
+      "metric": "loss_news",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.40",
+      "ci_high": 2.967444,
+      "ci_low": 2.748162,
+      "mean": 2.856994,
+      "metric": "loss_recipes",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.40",
+      "ci_high": 49.0,
+      "ci_low": 32.0,
+      "mean": 41.0,
+      "metric": "removed_docs",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.40",
+      "ci_high": 20000.0,
+      "ci_low": 20000.0,
+      "mean": 20000.0,
+      "metric": "train_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.40",
+      "ci_high": 20000.0,
+      "ci_low": 20000.0,
+      "mean": 20000.0,
+      "metric": "unique_content_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.40",
+      "ci_high": 2.75501,
+      "ci_low": 2.65526,
+      "mean": 2.689428,
+      "metric": "validation_loss",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.50",
+      "ci_high": 175.0,
+      "ci_low": 163.0,
+      "mean": 171.0,
+      "metric": "kept_docs",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.50",
+      "ci_high": 3.043426,
+      "ci_low": 2.700486,
+      "mean": 2.890488,
+      "metric": "loss_code",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.50",
+      "ci_high": 2.661277,
+      "ci_low": 2.553804,
+      "mean": 2.597971,
+      "metric": "loss_forum_qa",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.50",
+      "ci_high": 2.559622,
+      "ci_low": 2.466722,
+      "mean": 2.525823,
+      "metric": "loss_news",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.50",
+      "ci_high": 2.964092,
+      "ci_low": 2.85231,
+      "mean": 2.914466,
+      "metric": "loss_recipes",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.50",
+      "ci_high": 32.0,
+      "ci_low": 20.0,
+      "mean": 24.0,
+      "metric": "removed_docs",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.50",
+      "ci_high": 20000.0,
+      "ci_low": 20000.0,
+      "mean": 20000.0,
+      "metric": "train_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.50",
+      "ci_high": 20000.0,
+      "ci_low": 20000.0,
+      "mean": 20000.0,
+      "metric": "unique_content_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.50",
+      "ci_high": 2.765807,
+      "ci_low": 2.631058,
+      "mean": 2.686023,
+      "metric": "validation_loss",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.60",
+      "ci_high": 179.0,
+      "ci_low": 174.0,
+      "mean": 177.0,
+      "metric": "kept_docs",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.60",
+      "ci_high": 3.154385,
+      "ci_low": 2.700486,
+      "mean": 2.927474,
+      "metric": "loss_code",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.60",
+      "ci_high": 2.661277,
+      "ci_low": 2.548711,
+      "mean": 2.587931,
+      "metric": "loss_forum_qa",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.60",
+      "ci_high": 2.559622,
+      "ci_low": 2.473396,
+      "mean": 2.528048,
+      "metric": "loss_news",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.60",
+      "ci_high": 2.960017,
+      "ci_low": 2.85231,
+      "mean": 2.913108,
+      "metric": "loss_recipes",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.60",
+      "ci_high": 21.0,
+      "ci_low": 16.0,
+      "mean": 18.0,
+      "metric": "removed_docs",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.60",
+      "ci_high": 20000.0,
+      "ci_low": 20000.0,
+      "mean": 20000.0,
+      "metric": "train_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.60",
+      "ci_high": 20000.0,
+      "ci_low": 20000.0,
+      "mean": 20000.0,
+      "metric": "unique_content_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "threshold_0.60",
+      "ci_high": 2.798816,
+      "ci_low": 2.631058,
+      "mean": 2.697026,
+      "metric": "validation_loss",
+      "n_seeds": 3
+    }
+  ]
+}

@@ -1,0 +1,605 @@
+{
+  "code_version": "0.10.0",
+  "config": {
+    "bootstrap_samples": 1000,
+    "n_docs": 240,
+    "parameters": {
+      "token_scales": [
+        20000,
+        50000,
+        100000,
+        200000
+      ]
+    },
+    "seeds": [
+      11,
+      23,
+      37
+    ],
+    "study": "scaling_law",
+    "train_tokens": 200000
+  },
+  "config_hash": "ddf9ad49292e",
+  "result_hash": "3a75562b1955",
+  "rows": [
+    {
+      "arm": "tokens_20000",
+      "fitted_log_slope": -0.068785,
+      "fitted_unique_log_slope": -0.09431,
+      "kept_docs": 175,
+      "loss_code": 3.043426,
+      "loss_forum_qa": 2.578832,
+      "loss_news": 2.466722,
+      "loss_recipes": 2.964092,
+      "removed_docs": 20,
+      "seed": 11,
+      "total_tokens": 20000,
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.765807
+    },
+    {
+      "arm": "tokens_50000",
+      "fitted_log_slope": -0.068785,
+      "fitted_unique_log_slope": -0.09431,
+      "kept_docs": 175,
+      "loss_code": 2.600929,
+      "loss_forum_qa": 2.416737,
+      "loss_news": 2.360709,
+      "loss_recipes": 2.813667,
+      "removed_docs": 20,
+      "seed": 11,
+      "total_tokens": 50000,
+      "train_tokens": 50000,
+      "unique_content_tokens": 50000,
+      "validation_loss": 2.508938
+    },
+    {
+      "arm": "tokens_100000",
+      "fitted_log_slope": -0.068785,
+      "fitted_unique_log_slope": -0.09431,
+      "kept_docs": 175,
+      "loss_code": 2.434233,
+      "loss_forum_qa": 2.37203,
+      "loss_news": 2.299671,
+      "loss_recipes": 2.746106,
+      "removed_docs": 20,
+      "seed": 11,
+      "total_tokens": 100000,
+      "train_tokens": 100000,
+      "unique_content_tokens": 94475,
+      "validation_loss": 2.412528
+    },
+    {
+      "arm": "tokens_200000",
+      "fitted_log_slope": -0.068785,
+      "fitted_unique_log_slope": -0.09431,
+      "kept_docs": 175,
+      "loss_code": 2.37854,
+      "loss_forum_qa": 2.323044,
+      "loss_news": 2.260242,
+      "loss_recipes": 2.681534,
+      "removed_docs": 20,
+      "seed": 11,
+      "total_tokens": 200000,
+      "train_tokens": 200000,
+      "unique_content_tokens": 94475,
+      "validation_loss": 2.361599
+    },
+    {
+      "arm": "tokens_20000",
+      "fitted_log_slope": -0.053888,
+      "fitted_unique_log_slope": -0.074772,
+      "kept_docs": 175,
+      "loss_code": 2.927551,
+      "loss_forum_qa": 2.553804,
+      "loss_news": 2.551126,
+      "loss_recipes": 2.85231,
+      "removed_docs": 20,
+      "seed": 23,
+      "total_tokens": 20000,
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.631058
+    },
+    {
+      "arm": "tokens_50000",
+      "fitted_log_slope": -0.053888,
+      "fitted_unique_log_slope": -0.074772,
+      "kept_docs": 175,
+      "loss_code": 2.64308,
+      "loss_forum_qa": 2.408644,
+      "loss_news": 2.379197,
+      "loss_recipes": 2.694411,
+      "removed_docs": 20,
+      "seed": 23,
+      "total_tokens": 50000,
+      "train_tokens": 50000,
+      "unique_content_tokens": 50000,
+      "validation_loss": 2.450296
+    },
+    {
+      "arm": "tokens_100000",
+      "fitted_log_slope": -0.053888,
+      "fitted_unique_log_slope": -0.074772,
+      "kept_docs": 175,
+      "loss_code": 2.440073,
+      "loss_forum_qa": 2.351249,
+      "loss_news": 2.324419,
+      "loss_recipes": 2.706927,
+      "removed_docs": 20,
+      "seed": 23,
+      "total_tokens": 100000,
+      "train_tokens": 100000,
+      "unique_content_tokens": 91221,
+      "validation_loss": 2.372014
+    },
+    {
+      "arm": "tokens_200000",
+      "fitted_log_slope": -0.053888,
+      "fitted_unique_log_slope": -0.074772,
+      "kept_docs": 175,
+      "loss_code": 2.378504,
+      "loss_forum_qa": 2.299118,
+      "loss_news": 2.289407,
+      "loss_recipes": 2.655467,
+      "removed_docs": 20,
+      "seed": 23,
+      "total_tokens": 200000,
+      "train_tokens": 200000,
+      "unique_content_tokens": 91221,
+      "validation_loss": 2.325027
+    },
+    {
+      "arm": "tokens_20000",
+      "fitted_log_slope": -0.053784,
+      "fitted_unique_log_slope": -0.080453,
+      "kept_docs": 163,
+      "loss_code": 2.700486,
+      "loss_forum_qa": 2.661277,
+      "loss_news": 2.559622,
+      "loss_recipes": 2.926997,
+      "removed_docs": 32,
+      "seed": 37,
+      "total_tokens": 20000,
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.661204
+    },
+    {
+      "arm": "tokens_50000",
+      "fitted_log_slope": -0.053784,
+      "fitted_unique_log_slope": -0.080453,
+      "kept_docs": 163,
+      "loss_code": 2.560299,
+      "loss_forum_qa": 2.477138,
+      "loss_news": 2.378735,
+      "loss_recipes": 2.679003,
+      "removed_docs": 32,
+      "seed": 37,
+      "total_tokens": 50000,
+      "train_tokens": 50000,
+      "unique_content_tokens": 50000,
+      "validation_loss": 2.481465
+    },
+    {
+      "arm": "tokens_100000",
+      "fitted_log_slope": -0.053784,
+      "fitted_unique_log_slope": -0.080453,
+      "kept_docs": 163,
+      "loss_code": 2.442187,
+      "loss_forum_qa": 2.394126,
+      "loss_news": 2.316236,
+      "loss_recipes": 2.620028,
+      "removed_docs": 32,
+      "seed": 37,
+      "total_tokens": 100000,
+      "train_tokens": 100000,
+      "unique_content_tokens": 81647,
+      "validation_loss": 2.401019
+    },
+    {
+      "arm": "tokens_200000",
+      "fitted_log_slope": -0.053784,
+      "fitted_unique_log_slope": -0.080453,
+      "kept_docs": 163,
+      "loss_code": 2.393673,
+      "loss_forum_qa": 2.344139,
+      "loss_news": 2.267708,
+      "loss_recipes": 2.574157,
+      "removed_docs": 32,
+      "seed": 37,
+      "total_tokens": 200000,
+      "train_tokens": 200000,
+      "unique_content_tokens": 81647,
+      "validation_loss": 2.352437
+    }
+  ],
+  "study": "scaling_law",
+  "summary": [
+    {
+      "arm": "tokens_100000",
+      "ci_high": -0.053784,
+      "ci_low": -0.068785,
+      "mean": -0.058819,
+      "metric": "fitted_log_slope",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_100000",
+      "ci_high": -0.074772,
+      "ci_low": -0.09431,
+      "mean": -0.083178,
+      "metric": "fitted_unique_log_slope",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_100000",
+      "ci_high": 175.0,
+      "ci_low": 163.0,
+      "mean": 171.0,
+      "metric": "kept_docs",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_100000",
+      "ci_high": 2.442187,
+      "ci_low": 2.434233,
+      "mean": 2.438831,
+      "metric": "loss_code",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_100000",
+      "ci_high": 2.394126,
+      "ci_low": 2.351249,
+      "mean": 2.372468,
+      "metric": "loss_forum_qa",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_100000",
+      "ci_high": 2.324419,
+      "ci_low": 2.299671,
+      "mean": 2.313442,
+      "metric": "loss_news",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_100000",
+      "ci_high": 2.746106,
+      "ci_low": 2.620028,
+      "mean": 2.69102,
+      "metric": "loss_recipes",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_100000",
+      "ci_high": 32.0,
+      "ci_low": 20.0,
+      "mean": 24.0,
+      "metric": "removed_docs",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_100000",
+      "ci_high": 100000.0,
+      "ci_low": 100000.0,
+      "mean": 100000.0,
+      "metric": "total_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_100000",
+      "ci_high": 100000.0,
+      "ci_low": 100000.0,
+      "mean": 100000.0,
+      "metric": "train_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_100000",
+      "ci_high": 94475.0,
+      "ci_low": 81647.0,
+      "mean": 89114.333333,
+      "metric": "unique_content_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_100000",
+      "ci_high": 2.412528,
+      "ci_low": 2.372014,
+      "mean": 2.395187,
+      "metric": "validation_loss",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_20000",
+      "ci_high": -0.053784,
+      "ci_low": -0.068785,
+      "mean": -0.058819,
+      "metric": "fitted_log_slope",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_20000",
+      "ci_high": -0.074772,
+      "ci_low": -0.09431,
+      "mean": -0.083178,
+      "metric": "fitted_unique_log_slope",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_20000",
+      "ci_high": 175.0,
+      "ci_low": 163.0,
+      "mean": 171.0,
+      "metric": "kept_docs",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_20000",
+      "ci_high": 3.043426,
+      "ci_low": 2.700486,
+      "mean": 2.890488,
+      "metric": "loss_code",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_20000",
+      "ci_high": 2.661277,
+      "ci_low": 2.553804,
+      "mean": 2.597971,
+      "metric": "loss_forum_qa",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_20000",
+      "ci_high": 2.559622,
+      "ci_low": 2.466722,
+      "mean": 2.525823,
+      "metric": "loss_news",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_20000",
+      "ci_high": 2.964092,
+      "ci_low": 2.85231,
+      "mean": 2.914466,
+      "metric": "loss_recipes",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_20000",
+      "ci_high": 32.0,
+      "ci_low": 20.0,
+      "mean": 24.0,
+      "metric": "removed_docs",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_20000",
+      "ci_high": 20000.0,
+      "ci_low": 20000.0,
+      "mean": 20000.0,
+      "metric": "total_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_20000",
+      "ci_high": 20000.0,
+      "ci_low": 20000.0,
+      "mean": 20000.0,
+      "metric": "train_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_20000",
+      "ci_high": 20000.0,
+      "ci_low": 20000.0,
+      "mean": 20000.0,
+      "metric": "unique_content_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_20000",
+      "ci_high": 2.765807,
+      "ci_low": 2.631058,
+      "mean": 2.686023,
+      "metric": "validation_loss",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_200000",
+      "ci_high": -0.053784,
+      "ci_low": -0.068785,
+      "mean": -0.058819,
+      "metric": "fitted_log_slope",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_200000",
+      "ci_high": -0.074772,
+      "ci_low": -0.09431,
+      "mean": -0.083178,
+      "metric": "fitted_unique_log_slope",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_200000",
+      "ci_high": 175.0,
+      "ci_low": 163.0,
+      "mean": 171.0,
+      "metric": "kept_docs",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_200000",
+      "ci_high": 2.393673,
+      "ci_low": 2.378504,
+      "mean": 2.383572,
+      "metric": "loss_code",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_200000",
+      "ci_high": 2.344139,
+      "ci_low": 2.299118,
+      "mean": 2.3221,
+      "metric": "loss_forum_qa",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_200000",
+      "ci_high": 2.289407,
+      "ci_low": 2.260242,
+      "mean": 2.272452,
+      "metric": "loss_news",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_200000",
+      "ci_high": 2.681534,
+      "ci_low": 2.574157,
+      "mean": 2.637053,
+      "metric": "loss_recipes",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_200000",
+      "ci_high": 32.0,
+      "ci_low": 20.0,
+      "mean": 24.0,
+      "metric": "removed_docs",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_200000",
+      "ci_high": 200000.0,
+      "ci_low": 200000.0,
+      "mean": 200000.0,
+      "metric": "total_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_200000",
+      "ci_high": 200000.0,
+      "ci_low": 200000.0,
+      "mean": 200000.0,
+      "metric": "train_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_200000",
+      "ci_high": 94475.0,
+      "ci_low": 81647.0,
+      "mean": 89114.333333,
+      "metric": "unique_content_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_200000",
+      "ci_high": 2.361599,
+      "ci_low": 2.325027,
+      "mean": 2.346354,
+      "metric": "validation_loss",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_50000",
+      "ci_high": -0.053784,
+      "ci_low": -0.068785,
+      "mean": -0.058819,
+      "metric": "fitted_log_slope",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_50000",
+      "ci_high": -0.074772,
+      "ci_low": -0.09431,
+      "mean": -0.083178,
+      "metric": "fitted_unique_log_slope",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_50000",
+      "ci_high": 175.0,
+      "ci_low": 163.0,
+      "mean": 171.0,
+      "metric": "kept_docs",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_50000",
+      "ci_high": 2.64308,
+      "ci_low": 2.560299,
+      "mean": 2.601436,
+      "metric": "loss_code",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_50000",
+      "ci_high": 2.477138,
+      "ci_low": 2.408644,
+      "mean": 2.434173,
+      "metric": "loss_forum_qa",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_50000",
+      "ci_high": 2.379197,
+      "ci_low": 2.360709,
+      "mean": 2.37288,
+      "metric": "loss_news",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_50000",
+      "ci_high": 2.813667,
+      "ci_low": 2.679003,
+      "mean": 2.729027,
+      "metric": "loss_recipes",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_50000",
+      "ci_high": 32.0,
+      "ci_low": 20.0,
+      "mean": 24.0,
+      "metric": "removed_docs",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_50000",
+      "ci_high": 50000.0,
+      "ci_low": 50000.0,
+      "mean": 50000.0,
+      "metric": "total_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_50000",
+      "ci_high": 50000.0,
+      "ci_low": 50000.0,
+      "mean": 50000.0,
+      "metric": "train_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_50000",
+      "ci_high": 50000.0,
+      "ci_low": 50000.0,
+      "mean": 50000.0,
+      "metric": "unique_content_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "tokens_50000",
+      "ci_high": 2.508938,
+      "ci_low": 2.450296,
+      "mean": 2.480233,
+      "metric": "validation_loss",
+      "n_seeds": 3
+    }
+  ]
+}

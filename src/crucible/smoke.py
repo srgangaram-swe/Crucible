@@ -262,6 +262,7 @@ def run_smoke(workdir: Path | None = None) -> dict[str, Any]:
     # 14. Reference trainer: a few CPU steps when the train extra is present.
     # Core stays torch-free; this stage self-skips (and says so) without it.
     train_report: dict[str, Any] | None = None
+    forecast_report: dict[str, Any] | None = None
     try:
         import torch  # noqa: F401
 
@@ -281,6 +282,52 @@ def run_smoke(workdir: Path | None = None) -> dict[str, Any]:
         )
         train_report = train_result.as_dict()
         checks.append("trainer_cpu_loss_decreases")
+
+        from crucible.forecast import (
+            ForecastRunConfig,
+            ForecastTrainConfig,
+            PatchTSTConfig,
+            SyntheticFinancialConfig,
+            run_forecast,
+        )
+
+        forecast_result = run_forecast(
+            ForecastRunConfig(
+                synthetic=SyntheticFinancialConfig(n_steps=260, seed=5),
+                model=PatchTSTConfig(
+                    context_length=24,
+                    horizon=2,
+                    patch_length=6,
+                    patch_stride=3,
+                    d_model=16,
+                    n_heads=2,
+                    n_layers=1,
+                    dropout=0.0,
+                ),
+                training=ForecastTrainConfig(
+                    epochs=3,
+                    batch_size=32,
+                    patience=3,
+                    warmup_epochs=1,
+                    seed=5,
+                    device="cpu",
+                ),
+                embargo=2,
+            ),
+            workdir / "forecast",
+        )
+        _check(
+            forecast_result.metrics["model"]["quantile_crossing_rate"] == 0.0,
+            "forecast quantiles crossed",
+        )
+        _check(len(forecast_result.plot_paths) == 5, "forecast evaluation plots are incomplete")
+        forecast_report = {
+            "run_id": forecast_result.run_id,
+            "model_mae": forecast_result.metrics["model"]["mae"],
+            "persistence_mae": forecast_result.metrics["persistence"]["mae"],
+            "plots": sorted(forecast_result.plot_paths),
+        }
+        checks.append("forecast_patchtst_trains_and_evaluates")
     else:
         checks.append("trainer_skipped_no_torch")
 
@@ -344,6 +391,7 @@ def run_smoke(workdir: Path | None = None) -> dict[str, Any]:
             "vocab_size": shard_result.vocab_size,
         },
         "train": train_report,
+        "forecast": forecast_report,
         "assay": assay_hashes,
         "generation": report,
     }

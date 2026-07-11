@@ -61,6 +61,12 @@ flowchart LR
     end
     Meta --> Research
     G --> Research
+
+    subgraph Forecasting["Probabilistic forecasting"]
+        TS[Timestamped numeric data] --> PT[Patch Transformer + RevIN]
+        PT --> Q[Multi-horizon quantiles]
+        Q --> EV[Sealed evaluation + plots]
+    end
 ```
 
 ## Principles
@@ -101,3 +107,7 @@ flowchart LR
 | `crucible.serve` / `dashboard` | 7 | Read-only FastAPI metadata API and Streamlit dashboard |
 | `crucible.assay.harness` | 8 | Multi-seed execution, bootstrap CIs, content-addressed reports |
 | `crucible.assay.studies` | 8 | Dedup, mixture, quality, and scaling experiments |
+| `crucible.forecast.data` | 0.10 | Temporal contracts, embargoed splits, train-only scaling, windows |
+| `crucible.forecast.model` | 0.10 | Patch Transformer, RevIN, ordered quantile head |
+| `crucible.forecast.trainer` | 0.10 | AdamW loop, scheduling, clipping, early stop, checkpoints |
+| `crucible.forecast.metrics/plots` | 0.10 | Baselines, probabilistic metrics, held-out SVG reports |

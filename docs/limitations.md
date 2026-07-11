@@ -16,6 +16,14 @@ a large-scale study. Specifically:
   cross-entropy is a real downstream measurement but is not a substitute for transformer
   pretraining. Three-seed bootstrap intervals describe these runs; they do not establish
   population-level uncertainty or external validity.
+- **Forecasting is not a trading system.** The PatchTST-style model has a real PyTorch
+  training loop and sealed synthetic evaluation, but the committed benchmark is a
+  predictable regime-switching process. It excludes transaction costs, corporate
+  actions, exchange calendars, point-in-time universe membership, data-vendor revisions,
+  and live execution. Its baseline improvement proves implementation behavior, not alpha.
+- **Single-series, past-observed features.** The current CSV contract trains one ordered
+  series per run. Panel/global cutoff support, missingness masks, known-future covariates,
+  and availability timestamps are required before multi-asset production research.
 - **Measured vs illustrative numbers.** Any number in docs or reports is either (a) produced
   by a committed, seed-controlled run whose config is referenced next to it, or (b) explicitly
   labeled "illustrative". Nothing in between — benchmark numbers are never fabricated.

@@ -7,10 +7,10 @@ config hash and the measured-result content hash.
 
 | Study | Config | Result | Report |
 |---|---|---|---|
-| Dedup threshold | `adc73ba41e5f` | `77bfe300a204` | [analysis](dedup_ablation.md) |
-| Domain mixture | `008655194a79` | `7355b35958c6` | [analysis](mixing_ablation.md) |
-| Quality gate | `7105b682645a` | `b585e9b6f48e` | [analysis](quality_ablation.md) |
-| Data scaling | `bbb62eea7f3e` | `68a3d28153ac` | [analysis](scaling_law.md) |
+| Dedup threshold | `437c528d0822` | `988aad638f56` | [analysis](dedup_ablation.md) |
+| Domain mixture | `eea2fcac3c38` | `ae32b89a0f61` | [analysis](mixing_ablation.md) |
+| Quality gate | `46c7fe66f44b` | `6e32ce801a86` | [analysis](quality_ablation.md) |
+| Data scaling | `ddf9ad49292e` | `3a75562b1955` | [analysis](scaling_law.md) |
 
 Reproduce all committed artifacts:
 

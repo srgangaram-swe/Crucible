@@ -2,6 +2,30 @@
 
 Format follows [Keep a Changelog](https://keepachangelog.com/); versions follow SemVer.
 
+## [0.10.0] - 2026-07-11 — Probabilistic time-series forecasting
+
+### Added
+
+- Financial-ready `crucible.forecast` subsystem (#30): strict timestamp/numeric CSV
+  contracts, deterministic regime-switching reference data, train-only scaling,
+  horizon-sized embargoes, and leakage-safe rolling-origin windows.
+- PatchTST-style PyTorch architecture with context-only RevIN, shared channel-wise
+  patch encoding, learned cross-channel pooling, direct multi-horizon ordered
+  quantiles, and validation-only additive calibration.
+- Real AdamW/pinball training loop with deterministic seeds, warmup/cosine schedule,
+  gradient clipping, validation early stopping, atomic rich checkpoints, and exact
+  checkpoint reload inference.
+- Held-out MAE/RMSE/sMAPE/MASE/directional/pinball/coverage metrics; persistence,
+  seasonal-naive, and zero-return baselines; five committed SVG evaluation plots.
+- `crucible forecast`, `forecast` optional dependency, Torch CI coverage, unit and
+  end-to-end integration tests, and documented real-financial-data requirements.
+
+### Fixed
+
+- Removed Phase 8 assay train/validation overlap discovered during the forecasting
+  leakage audit; regenerated every committed experiment result and added a disjoint-ID
+  regression test.
+
 ## [0.9.0] - 2026-07-10 — Phase 8: assay harness + capstone
 
 ### Added

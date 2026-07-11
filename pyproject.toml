@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "crucible-data"
-version = "0.9.0"
+version = "0.10.0"
 description = "Crucible: a local-first data refinery and data-centric research platform for distributed training."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -38,8 +38,9 @@ hf = ["datasets>=2.16"]
 quality = ["pandas>=2.1", "pandera>=0.18"]
 dedup = ["datasketch>=1.6"]
 train = ["torch>=2.2"]
+forecast = ["torch>=2.2"]
 serve = ["fastapi>=0.109", "httpx2>=0.1", "uvicorn>=0.27", "streamlit>=1.30"]
-all = ["crucible-data[stream,hf,quality,dedup,train,serve]"]
+all = ["crucible-data[stream,hf,quality,dedup,train,forecast,serve]"]
 dev = [
     "black>=24.1",
     "mypy>=1.8",
@@ -115,7 +116,7 @@ ignore_missing_imports = true
 # In torch-free environments nn.Module resolves to Any (see the override
 # above); the model class must still be definable there.
 [[tool.mypy.overrides]]
-module = ["crucible.train.model"]
+module = ["crucible.train.model", "crucible.forecast.model"]
 disallow_subclassing_any = false
 
 [tool.pytest.ini_options]
@@ -131,7 +132,12 @@ branch = true
 # The train package is exercised by the torch CPU CI job (plain pytest);
 # the torch-free coverage gate would count it as dead code. Unifying
 # coverage across both jobs is tracked in issue #21.
-omit = ["*/crucible/train/*"]
+omit = [
+    "*/crucible/train/*",
+    "*/crucible/forecast/model.py",
+    "*/crucible/forecast/trainer.py",
+    "*/crucible/forecast/pipeline.py",
+]
 
 [tool.coverage.report]
 fail_under = 95
