@@ -2,6 +2,24 @@
 
 Format follows [Keep a Changelog](https://keepachangelog.com/); versions follow SemVer.
 
+## [0.8.0] - 2026-07-10 — Phase 7: orchestration + serving
+
+### Added
+
+- `crucible.orchestrate` (#9): typed DAG validation, deterministic topological
+  execution, bounded retries, atomic durable run records, and a canonical
+  promote-before-dedup pipeline. Bronze/config fingerprints make completed runs
+  idempotent; `--force` is explicit.
+- `crucible.serve` and `crucible.dashboard` (#10, #11): versioned, read-only
+  FastAPI endpoints and a Streamlit control plane over catalog, reports,
+  versions, lineage, runs, and metrics. Serving remains an optional extra.
+- `crucible.observability` (#12): append-only stage duration, row-count,
+  throughput, attempt, status, and error metrics, exposed through CLI/API/UI.
+- Unit and integration coverage for graph validation, ordering, retries,
+  failures, pipeline idempotency, API contracts, report errors, metrics, and
+  dashboard metadata. The offline smoke rebuild now runs through the DAG and
+  verifies both the skip path and emitted metrics.
+
 ## [0.7.0] - 2026-07-09 — Phase 6: training shards + reference trainer
 
 ### Added

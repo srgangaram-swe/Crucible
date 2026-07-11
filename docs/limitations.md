@@ -29,13 +29,14 @@ a large-scale study. Specifically:
   all trivially detectable would make every reported metric meaningless. Some dedup "false
   positives" are actually unlabeled accidental template collisions; these are counted
   separately (`fp_unlabeled_exact`) instead of being forgiven.
-- **Lineage is a local file, not a service.** Events are OpenLineage-inspired JSONL in the
+- **Lineage is locally persisted and read-only served.** Events are OpenLineage-inspired JSONL in the
   catalog root, folded into a graph at read time; they are not validated against the
-  OpenLineage JSON schema and there is no server/UI (the emitter could target Marquez
-  later). Snapshot verification checks content hashes, not a cryptographic audit trail.
-- **Promote-then-dedup ordering is by convention until Phase 7.** Re-running `crucible
-  promote` after `crucible dedup` resurrects duplicates; the DAG runner will encode the
-  ordering.
+  OpenLineage JSON schema. The Phase 7 API/dashboard expose local metadata but are not a
+  multi-tenant control plane (the emitter could target Marquez later). Snapshot verification
+  checks content hashes, not a cryptographic audit trail.
+- **Orchestration is single-process.** The DAG validates ordering, retries bounded failures,
+  persists runs, and skips completed input/config fingerprints. It is not a distributed
+  scheduler and has no leases, backfill calendar, or cross-host worker queue.
 - **Re-promotion is not concurrency-safe.** `run_gate` clears and rebuilds derived layers;
   two concurrent promotions of the same dataset can interleave. Single-writer-per-dataset is
   assumed throughout (fine for the local DAG runner; an object-store deployment would need a
