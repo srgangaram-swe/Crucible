@@ -25,6 +25,7 @@ htmlcov/
 data/
 workdir/
 runs/
+results/forecast/**/best_model.pt
 
 # OS / editor
 .DS_Store

@@ -1,5 +1,5 @@
 from crucible.assay.harness import ExperimentConfig
-from crucible.assay.studies import STUDIES
+from crucible.assay.studies import STUDIES, _texts
 
 
 def _config(study: str) -> ExperimentConfig:
@@ -35,3 +35,8 @@ def test_study_contracts() -> None:
 
     scaling = STUDIES["scaling_law"](_config("scaling_law"), 3)
     assert len({row["fitted_log_slope"] for row in scaling}) == 1
+
+
+def test_training_and_validation_ids_are_disjoint() -> None:
+    training, validation = _texts(_config("quality_ablation"), 3)
+    assert {row["id"] for row in training}.isdisjoint(row["id"] for row in validation)

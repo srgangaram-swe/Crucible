@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+import pytest
 from click.testing import CliRunner
 
 from crucible import __version__
@@ -39,6 +40,29 @@ def test_assay_cli_rejects_unknown_study(tmp_path: Path) -> None:
     result = CliRunner().invoke(main, ["assay", "--config", str(config)])
     assert result.exit_code == 2
     assert "unknown study" in result.output
+
+
+def test_forecast_cli_delegates_validated_config(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from crucible import forecast as forecast_module
+
+    config = tmp_path / "forecast.yaml"
+    config.write_text(
+        "synthetic:\n  n_steps: 220\nmodel:\n  context_length: 24\n  horizon: 2\n"
+        "  patch_length: 6\n  patch_stride: 3\n  d_model: 16\n  n_heads: 2\n"
+    )
+
+    class Result:
+        def as_dict(self) -> dict[str, object]:
+            return {"run_id": "test-run", "artifact_dir": "out"}
+
+    monkeypatch.setattr(forecast_module, "run_forecast", lambda cfg, out: Result())
+    result = CliRunner().invoke(
+        main, ["forecast", "--config", str(config), "--out", str(tmp_path / "out")]
+    )
+    assert result.exit_code == 0, result.output
+    assert json.loads(result.output)["run_id"] == "test-run"
 
 
 def test_synth_writes_outputs(tmp_path: Path) -> None:

@@ -143,6 +143,19 @@ done
 See [RESULTS.md](RESULTS.md) for measured findings, negative results, caveats,
 config hashes, result hashes, and links to each committed artifact.
 
+Train the financial-ready probabilistic time-series model on the offline reference
+series (or point it at timestamped numeric CSV data):
+
+```bash
+pip install -e '.[forecast]'
+crucible forecast --config configs/forecast_financial.yaml
+```
+
+This is a real PatchTST-style PyTorch training/validation/test loop with ordered
+quantiles, early stopping, checkpoints, naive baselines, and held-out evaluation plots.
+See [docs/forecasting.md](docs/forecasting.md) for architecture, measured results, and
+the controls still required before using real financial data.
+
 ## Design principles
 
 - **Local-first, then scale.** The default path needs no Docker, no network, no GPU. Optional

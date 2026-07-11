@@ -1,0 +1,12 @@
+{
+  "architecture": "PatchTST-style shared channel encoder with attention pooling",
+  "data": "synthetic_regime_switching_returns",
+  "intended_use": "offline research and integration validation",
+  "limitations": [
+    "synthetic benchmark is not evidence of market alpha",
+    "no transaction costs, corporate actions, or exchange calendar",
+    "past-observed covariates only; known-future features are unsupported"
+  ],
+  "not_for": "live trading, investment advice, or unvalidated financial decisions",
+  "objective": "direct multi-horizon quantile forecasting"
+}

@@ -1,0 +1,498 @@
+{
+  "code_version": "0.10.0",
+  "config": {
+    "bootstrap_samples": 1000,
+    "n_docs": 240,
+    "parameters": {},
+    "seeds": [
+      11,
+      23,
+      37
+    ],
+    "study": "mixture_ablation",
+    "train_tokens": 20000
+  },
+  "config_hash": "eea2fcac3c38",
+  "result_hash": "ae32b89a0f61",
+  "rows": [
+    {
+      "arm": "uniform",
+      "kept_docs": 195,
+      "loss_code": 2.517606,
+      "loss_forum_qa": 2.88936,
+      "loss_news": 2.646605,
+      "loss_recipes": 2.895263,
+      "seed": 11,
+      "selection": "grid",
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.689548
+    },
+    {
+      "arm": "observed",
+      "kept_docs": 195,
+      "loss_code": 2.47547,
+      "loss_forum_qa": 2.798745,
+      "loss_news": 2.696149,
+      "loss_recipes": 3.07987,
+      "seed": 11,
+      "selection": "grid",
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.663912
+    },
+    {
+      "arm": "code_heavy",
+      "kept_docs": 195,
+      "loss_code": 2.393318,
+      "loss_forum_qa": 3.121495,
+      "loss_news": 2.699859,
+      "loss_recipes": 3.134167,
+      "seed": 11,
+      "selection": "grid",
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.740184
+    },
+    {
+      "arm": "proxy_selected_observed",
+      "kept_docs": 195,
+      "loss_code": 2.47547,
+      "loss_forum_qa": 2.798745,
+      "loss_news": 2.696149,
+      "loss_recipes": 3.07987,
+      "seed": 11,
+      "selection": "proxy",
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.663912
+    },
+    {
+      "arm": "uniform",
+      "kept_docs": 195,
+      "loss_code": 2.627447,
+      "loss_forum_qa": 2.685324,
+      "loss_news": 2.642475,
+      "loss_recipes": 2.797284,
+      "seed": 23,
+      "selection": "grid",
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.654475
+    },
+    {
+      "arm": "observed",
+      "kept_docs": 195,
+      "loss_code": 2.652325,
+      "loss_forum_qa": 2.772678,
+      "loss_news": 2.547003,
+      "loss_recipes": 2.873178,
+      "seed": 23,
+      "selection": "grid",
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.635294
+    },
+    {
+      "arm": "code_heavy",
+      "kept_docs": 195,
+      "loss_code": 2.368638,
+      "loss_forum_qa": 2.845011,
+      "loss_news": 2.966712,
+      "loss_recipes": 2.983201,
+      "seed": 23,
+      "selection": "grid",
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.802526
+    },
+    {
+      "arm": "proxy_selected_uniform",
+      "kept_docs": 195,
+      "loss_code": 2.627447,
+      "loss_forum_qa": 2.685324,
+      "loss_news": 2.642475,
+      "loss_recipes": 2.797284,
+      "seed": 23,
+      "selection": "proxy",
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.654475
+    },
+    {
+      "arm": "uniform",
+      "kept_docs": 195,
+      "loss_code": 2.65379,
+      "loss_forum_qa": 2.819147,
+      "loss_news": 2.527871,
+      "loss_recipes": 2.814427,
+      "seed": 37,
+      "selection": "grid",
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.638458
+    },
+    {
+      "arm": "observed",
+      "kept_docs": 195,
+      "loss_code": 2.76749,
+      "loss_forum_qa": 2.6152,
+      "loss_news": 2.553989,
+      "loss_recipes": 2.968206,
+      "seed": 37,
+      "selection": "grid",
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.681579
+    },
+    {
+      "arm": "code_heavy",
+      "kept_docs": 195,
+      "loss_code": 2.268654,
+      "loss_forum_qa": 3.069637,
+      "loss_news": 3.104366,
+      "loss_recipes": 3.296828,
+      "seed": 37,
+      "selection": "grid",
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.87209
+    },
+    {
+      "arm": "proxy_selected_observed",
+      "kept_docs": 195,
+      "loss_code": 2.76749,
+      "loss_forum_qa": 2.6152,
+      "loss_news": 2.553989,
+      "loss_recipes": 2.968206,
+      "seed": 37,
+      "selection": "proxy",
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.681579
+    }
+  ],
+  "study": "mixture_ablation",
+  "summary": [
+    {
+      "arm": "code_heavy",
+      "ci_high": 195.0,
+      "ci_low": 195.0,
+      "mean": 195.0,
+      "metric": "kept_docs",
+      "n_seeds": 3
+    },
+    {
+      "arm": "code_heavy",
+      "ci_high": 2.393318,
+      "ci_low": 2.268654,
+      "mean": 2.343537,
+      "metric": "loss_code",
+      "n_seeds": 3
+    },
+    {
+      "arm": "code_heavy",
+      "ci_high": 3.121495,
+      "ci_low": 2.845011,
+      "mean": 3.012048,
+      "metric": "loss_forum_qa",
+      "n_seeds": 3
+    },
+    {
+      "arm": "code_heavy",
+      "ci_high": 3.058481,
+      "ci_low": 2.699859,
+      "mean": 2.923646,
+      "metric": "loss_news",
+      "n_seeds": 3
+    },
+    {
+      "arm": "code_heavy",
+      "ci_high": 3.296828,
+      "ci_low": 2.983201,
+      "mean": 3.138065,
+      "metric": "loss_recipes",
+      "n_seeds": 3
+    },
+    {
+      "arm": "code_heavy",
+      "ci_high": 20000.0,
+      "ci_low": 20000.0,
+      "mean": 20000.0,
+      "metric": "train_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "code_heavy",
+      "ci_high": 20000.0,
+      "ci_low": 20000.0,
+      "mean": 20000.0,
+      "metric": "unique_content_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "code_heavy",
+      "ci_high": 2.87209,
+      "ci_low": 2.740184,
+      "mean": 2.804933,
+      "metric": "validation_loss",
+      "n_seeds": 3
+    },
+    {
+      "arm": "observed",
+      "ci_high": 195.0,
+      "ci_low": 195.0,
+      "mean": 195.0,
+      "metric": "kept_docs",
+      "n_seeds": 3
+    },
+    {
+      "arm": "observed",
+      "ci_high": 2.76749,
+      "ci_low": 2.47547,
+      "mean": 2.631762,
+      "metric": "loss_code",
+      "n_seeds": 3
+    },
+    {
+      "arm": "observed",
+      "ci_high": 2.798745,
+      "ci_low": 2.6152,
+      "mean": 2.728874,
+      "metric": "loss_forum_qa",
+      "n_seeds": 3
+    },
+    {
+      "arm": "observed",
+      "ci_high": 2.696149,
+      "ci_low": 2.547003,
+      "mean": 2.599047,
+      "metric": "loss_news",
+      "n_seeds": 3
+    },
+    {
+      "arm": "observed",
+      "ci_high": 3.07987,
+      "ci_low": 2.873178,
+      "mean": 2.973751,
+      "metric": "loss_recipes",
+      "n_seeds": 3
+    },
+    {
+      "arm": "observed",
+      "ci_high": 20000.0,
+      "ci_low": 20000.0,
+      "mean": 20000.0,
+      "metric": "train_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "observed",
+      "ci_high": 20000.0,
+      "ci_low": 20000.0,
+      "mean": 20000.0,
+      "metric": "unique_content_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "observed",
+      "ci_high": 2.681579,
+      "ci_low": 2.635294,
+      "mean": 2.660262,
+      "metric": "validation_loss",
+      "n_seeds": 3
+    },
+    {
+      "arm": "proxy_selected_observed",
+      "ci_high": 195.0,
+      "ci_low": 195.0,
+      "mean": 195.0,
+      "metric": "kept_docs",
+      "n_seeds": 2
+    },
+    {
+      "arm": "proxy_selected_observed",
+      "ci_high": 2.76749,
+      "ci_low": 2.47547,
+      "mean": 2.62148,
+      "metric": "loss_code",
+      "n_seeds": 2
+    },
+    {
+      "arm": "proxy_selected_observed",
+      "ci_high": 2.798745,
+      "ci_low": 2.6152,
+      "mean": 2.706973,
+      "metric": "loss_forum_qa",
+      "n_seeds": 2
+    },
+    {
+      "arm": "proxy_selected_observed",
+      "ci_high": 2.696149,
+      "ci_low": 2.553989,
+      "mean": 2.625069,
+      "metric": "loss_news",
+      "n_seeds": 2
+    },
+    {
+      "arm": "proxy_selected_observed",
+      "ci_high": 3.07987,
+      "ci_low": 2.968206,
+      "mean": 3.024038,
+      "metric": "loss_recipes",
+      "n_seeds": 2
+    },
+    {
+      "arm": "proxy_selected_observed",
+      "ci_high": 20000.0,
+      "ci_low": 20000.0,
+      "mean": 20000.0,
+      "metric": "train_tokens",
+      "n_seeds": 2
+    },
+    {
+      "arm": "proxy_selected_observed",
+      "ci_high": 20000.0,
+      "ci_low": 20000.0,
+      "mean": 20000.0,
+      "metric": "unique_content_tokens",
+      "n_seeds": 2
+    },
+    {
+      "arm": "proxy_selected_observed",
+      "ci_high": 2.681579,
+      "ci_low": 2.663912,
+      "mean": 2.672745,
+      "metric": "validation_loss",
+      "n_seeds": 2
+    },
+    {
+      "arm": "proxy_selected_uniform",
+      "ci_high": 195.0,
+      "ci_low": 195.0,
+      "mean": 195.0,
+      "metric": "kept_docs",
+      "n_seeds": 1
+    },
+    {
+      "arm": "proxy_selected_uniform",
+      "ci_high": 2.627447,
+      "ci_low": 2.627447,
+      "mean": 2.627447,
+      "metric": "loss_code",
+      "n_seeds": 1
+    },
+    {
+      "arm": "proxy_selected_uniform",
+      "ci_high": 2.685324,
+      "ci_low": 2.685324,
+      "mean": 2.685324,
+      "metric": "loss_forum_qa",
+      "n_seeds": 1
+    },
+    {
+      "arm": "proxy_selected_uniform",
+      "ci_high": 2.642475,
+      "ci_low": 2.642475,
+      "mean": 2.642475,
+      "metric": "loss_news",
+      "n_seeds": 1
+    },
+    {
+      "arm": "proxy_selected_uniform",
+      "ci_high": 2.797284,
+      "ci_low": 2.797284,
+      "mean": 2.797284,
+      "metric": "loss_recipes",
+      "n_seeds": 1
+    },
+    {
+      "arm": "proxy_selected_uniform",
+      "ci_high": 20000.0,
+      "ci_low": 20000.0,
+      "mean": 20000.0,
+      "metric": "train_tokens",
+      "n_seeds": 1
+    },
+    {
+      "arm": "proxy_selected_uniform",
+      "ci_high": 20000.0,
+      "ci_low": 20000.0,
+      "mean": 20000.0,
+      "metric": "unique_content_tokens",
+      "n_seeds": 1
+    },
+    {
+      "arm": "proxy_selected_uniform",
+      "ci_high": 2.654475,
+      "ci_low": 2.654475,
+      "mean": 2.654475,
+      "metric": "validation_loss",
+      "n_seeds": 1
+    },
+    {
+      "arm": "uniform",
+      "ci_high": 195.0,
+      "ci_low": 195.0,
+      "mean": 195.0,
+      "metric": "kept_docs",
+      "n_seeds": 3
+    },
+    {
+      "arm": "uniform",
+      "ci_high": 2.65379,
+      "ci_low": 2.517606,
+      "mean": 2.599614,
+      "metric": "loss_code",
+      "n_seeds": 3
+    },
+    {
+      "arm": "uniform",
+      "ci_high": 2.88936,
+      "ci_low": 2.685324,
+      "mean": 2.797944,
+      "metric": "loss_forum_qa",
+      "n_seeds": 3
+    },
+    {
+      "arm": "uniform",
+      "ci_high": 2.646605,
+      "ci_low": 2.527871,
+      "mean": 2.60565,
+      "metric": "loss_news",
+      "n_seeds": 3
+    },
+    {
+      "arm": "uniform",
+      "ci_high": 2.895263,
+      "ci_low": 2.797284,
+      "mean": 2.835658,
+      "metric": "loss_recipes",
+      "n_seeds": 3
+    },
+    {
+      "arm": "uniform",
+      "ci_high": 20000.0,
+      "ci_low": 20000.0,
+      "mean": 20000.0,
+      "metric": "train_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "uniform",
+      "ci_high": 20000.0,
+      "ci_low": 20000.0,
+      "mean": 20000.0,
+      "metric": "unique_content_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "uniform",
+      "ci_high": 2.689548,
+      "ci_low": 2.638458,
+      "mean": 2.660827,
+      "metric": "validation_loss",
+      "n_seeds": 3
+    }
+  ]
+}

@@ -554,6 +554,32 @@ def assay(config_path: Path, output_root: Path) -> None:
 
 @main.command()
 @click.option(
+    "--config",
+    "config_path",
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    required=True,
+    help="YAML ForecastRunConfig (see configs/forecast_financial.yaml).",
+)
+@click.option(
+    "--out",
+    "output_root",
+    type=click.Path(file_okay=False, path_type=Path),
+    default=Path("results/forecast"),
+    show_default=True,
+)
+def forecast(config_path: Path, output_root: Path) -> None:
+    """Train and evaluate a probabilistic time-series forecaster."""
+    from crucible.forecast import ForecastRunConfig, run_forecast
+
+    try:
+        result = run_forecast(load_config(ForecastRunConfig, config_path), output_root)
+    except ImportError as exc:
+        raise click.ClickException(str(exc)) from exc
+    click.echo(json.dumps(result.as_dict(), indent=2))
+
+
+@main.command()
+@click.option(
     "--workdir",
     type=click.Path(file_okay=False, path_type=Path),
     default=None,

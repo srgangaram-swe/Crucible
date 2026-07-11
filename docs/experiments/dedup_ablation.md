@@ -2,7 +2,7 @@
 
 We compare MinHash/Jaccard thresholds 0.40, 0.50, and 0.60 at exactly 20,000
 proxy-model training bytes per arm. Across seeds 11, 23, and 37, mean held-out
-cross-entropy was 2.690, 2.686, and 2.697 respectively. All bootstrap intervals
+cross-entropy was 2.689, 2.686, and 2.697 respectively. All bootstrap intervals
 overlap substantially; this experiment does **not** establish a downstream winner.
 
 The negative result is plausible at this corpus and compute scale: fixed compute cycles
@@ -12,5 +12,5 @@ are available. It should not be generalized to web-scale training. Lee et al.,
 motivate the hypothesis at realistic scale; our result only validates the experimental
 path and reports its small-scale outcome honestly.
 
-Source: `configs/experiments/dedup_ablation.yaml`; config `adc73ba41e5f`;
-result `77bfe300a204`.
+Source: `configs/experiments/dedup_ablation.yaml`; config `437c528d0822`;
+result `988aad638f56`.

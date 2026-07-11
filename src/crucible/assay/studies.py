@@ -31,7 +31,10 @@ def _texts(
     ]
     clean = [row for row in rows if row["kind"] == "clean"]
     split = max(1, int(len(clean) * 0.75))
-    return rows, clean[split:]
+    validation = clean[split:]
+    validation_ids = {row["id"] for row in validation}
+    training = [row for row in rows if row["id"] not in validation_ids]
+    return training, validation
 
 
 def _token_budget(texts: Iterable[str], budget: int) -> bytes:

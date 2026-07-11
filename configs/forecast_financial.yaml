@@ -1,0 +1,32 @@
+# Offline reference benchmark. Set input_csv and column names for real data later.
+synthetic:
+  n_steps: 1800
+  seed: 41
+  frequency_minutes: 1440
+
+model:
+  context_length: 96
+  horizon: 5
+  patch_length: 16
+  patch_stride: 8
+  d_model: 64
+  n_heads: 4
+  n_layers: 3
+  feedforward_multiplier: 4
+  dropout: 0.1
+  quantiles: [0.1, 0.5, 0.9]
+
+training:
+  epochs: 60
+  batch_size: 64
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  warmup_epochs: 3
+  patience: 10
+  min_delta: 0.00001
+  gradient_clip_norm: 1.0
+  seed: 41
+
+train_fraction: 0.7
+validation_fraction: 0.15
+embargo: 5

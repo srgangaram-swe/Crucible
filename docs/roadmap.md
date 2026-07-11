@@ -86,3 +86,13 @@ tests, docs, and smoke path for that phase are present.
 - Total-token and unique-post-dedup scaling fits with uncertainty estimates.
 - Reproducible capstone with committed configs, measured outputs, negative
   results, and an offline smoke path for every study.
+
+## Post-roadmap extensions
+
+### v0.10: Probabilistic Time-Series Forecasting
+
+- Leakage-safe temporal contracts, embargoed chronological splits, and train-only scaling.
+- PatchTST-style multi-horizon quantile model with a real deterministic PyTorch loop.
+- Persistence, seasonal-naive, and zero-return evaluation baselines.
+- Committed metrics, predictions, checkpoints-at-runtime, and five held-out SVG plots.
+- Vendor-neutral CSV path for future point-in-time financial data.

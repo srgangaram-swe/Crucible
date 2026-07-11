@@ -4,6 +4,19 @@ Crucible treats each data layer as a contract. The current shipped scope is
 bronze ingestion and the bronze→silver quality gate (with quarantine); later
 phases will add the gold contract without changing existing semantics.
 
+## Forecast input contract
+
+Forecast inputs are strictly ordered timestamps plus finite float columns. One column
+is the target and the others are past-observed covariates. Duplicate/out-of-order
+timestamps, missing columns, nonnumeric values, NaN, and infinity fail before windowing.
+The current adapter supports one series per run; panel identifiers and known-future
+covariates are intentionally not inferred.
+
+The scaler is fit on raw rows before the training cutoff only. A sample contains
+`[origin-context, origin)` inputs and `[origin, origin+horizon)` targets. Every target
+interval must fit wholly within train, validation, or test. Validation/test boundaries
+have a configurable embargo that must be at least the forecast horizon.
+
 ## Catalog Root
 
 The catalog root defaults to `data/crucible` and is configurable with
