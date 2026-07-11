@@ -116,7 +116,7 @@ ignore_missing_imports = true
 # In torch-free environments nn.Module resolves to Any (see the override
 # above); the model class must still be definable there.
 [[tool.mypy.overrides]]
-module = ["crucible.train.model"]
+module = ["crucible.train.model", "crucible.forecast.model"]
 disallow_subclassing_any = false
 
 [tool.pytest.ini_options]
