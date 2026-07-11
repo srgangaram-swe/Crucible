@@ -1,0 +1,355 @@
+{
+  "code_version": "0.9.0",
+  "config": {
+    "bootstrap_samples": 1000,
+    "n_docs": 240,
+    "parameters": {},
+    "seeds": [
+      11,
+      23,
+      37
+    ],
+    "study": "quality_ablation",
+    "train_tokens": 20000
+  },
+  "config_hash": "7105b682645a",
+  "result_hash": "b585e9b6f48e",
+  "rows": [
+    {
+      "arm": "ungated",
+      "keep_rate": 1.0,
+      "kept_docs": 240,
+      "loss_code": 2.999297,
+      "loss_forum_qa": 2.514202,
+      "loss_news": 2.550475,
+      "loss_recipes": 2.920245,
+      "seed": 11,
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.740745
+    },
+    {
+      "arm": "default",
+      "keep_rate": 0.9,
+      "kept_docs": 216,
+      "loss_code": 2.999536,
+      "loss_forum_qa": 2.516891,
+      "loss_news": 2.548767,
+      "loss_recipes": 2.917547,
+      "seed": 11,
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.741314
+    },
+    {
+      "arm": "repeated_sentences",
+      "keep_rate": 0.854167,
+      "kept_docs": 205,
+      "loss_code": 2.999536,
+      "loss_forum_qa": 2.516891,
+      "loss_news": 2.548767,
+      "loss_recipes": 2.917547,
+      "seed": 11,
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.741314
+    },
+    {
+      "arm": "ungated",
+      "keep_rate": 1.0,
+      "kept_docs": 240,
+      "loss_code": 2.929039,
+      "loss_forum_qa": 2.531796,
+      "loss_news": 2.579225,
+      "loss_recipes": 2.855773,
+      "seed": 23,
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.633961
+    },
+    {
+      "arm": "default",
+      "keep_rate": 0.9,
+      "kept_docs": 216,
+      "loss_code": 2.929242,
+      "loss_forum_qa": 2.561861,
+      "loss_news": 2.544218,
+      "loss_recipes": 2.85896,
+      "seed": 23,
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.631902
+    },
+    {
+      "arm": "repeated_sentences",
+      "keep_rate": 0.875,
+      "kept_docs": 210,
+      "loss_code": 2.928239,
+      "loss_forum_qa": 2.597814,
+      "loss_news": 2.514035,
+      "loss_recipes": 2.863637,
+      "seed": 23,
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.633812
+    },
+    {
+      "arm": "ungated",
+      "keep_rate": 1.0,
+      "kept_docs": 240,
+      "loss_code": 2.640127,
+      "loss_forum_qa": 2.627151,
+      "loss_news": 2.644463,
+      "loss_recipes": 2.934947,
+      "seed": 37,
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.674225
+    },
+    {
+      "arm": "default",
+      "keep_rate": 0.9,
+      "kept_docs": 216,
+      "loss_code": 2.641594,
+      "loss_forum_qa": 2.629902,
+      "loss_news": 2.634128,
+      "loss_recipes": 2.937444,
+      "seed": 37,
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.671181
+    },
+    {
+      "arm": "repeated_sentences",
+      "keep_rate": 0.875,
+      "kept_docs": 210,
+      "loss_code": 2.641594,
+      "loss_forum_qa": 2.629902,
+      "loss_news": 2.634128,
+      "loss_recipes": 2.937444,
+      "seed": 37,
+      "train_tokens": 20000,
+      "unique_content_tokens": 20000,
+      "validation_loss": 2.671181
+    }
+  ],
+  "study": "quality_ablation",
+  "summary": [
+    {
+      "arm": "default",
+      "ci_high": 0.9,
+      "ci_low": 0.9,
+      "mean": 0.9,
+      "metric": "keep_rate",
+      "n_seeds": 3
+    },
+    {
+      "arm": "default",
+      "ci_high": 216.0,
+      "ci_low": 216.0,
+      "mean": 216.0,
+      "metric": "kept_docs",
+      "n_seeds": 3
+    },
+    {
+      "arm": "default",
+      "ci_high": 2.999536,
+      "ci_low": 2.641594,
+      "mean": 2.856791,
+      "metric": "loss_code",
+      "n_seeds": 3
+    },
+    {
+      "arm": "default",
+      "ci_high": 2.629902,
+      "ci_low": 2.516891,
+      "mean": 2.569551,
+      "metric": "loss_forum_qa",
+      "n_seeds": 3
+    },
+    {
+      "arm": "default",
+      "ci_high": 2.634128,
+      "ci_low": 2.544218,
+      "mean": 2.575704,
+      "metric": "loss_news",
+      "n_seeds": 3
+    },
+    {
+      "arm": "default",
+      "ci_high": 2.937444,
+      "ci_low": 2.85896,
+      "mean": 2.90465,
+      "metric": "loss_recipes",
+      "n_seeds": 3
+    },
+    {
+      "arm": "default",
+      "ci_high": 20000.0,
+      "ci_low": 20000.0,
+      "mean": 20000.0,
+      "metric": "train_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "default",
+      "ci_high": 20000.0,
+      "ci_low": 20000.0,
+      "mean": 20000.0,
+      "metric": "unique_content_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "default",
+      "ci_high": 2.741314,
+      "ci_low": 2.631902,
+      "mean": 2.681466,
+      "metric": "validation_loss",
+      "n_seeds": 3
+    },
+    {
+      "arm": "repeated_sentences",
+      "ci_high": 0.875,
+      "ci_low": 0.854167,
+      "mean": 0.868056,
+      "metric": "keep_rate",
+      "n_seeds": 3
+    },
+    {
+      "arm": "repeated_sentences",
+      "ci_high": 210.0,
+      "ci_low": 205.0,
+      "mean": 208.333333,
+      "metric": "kept_docs",
+      "n_seeds": 3
+    },
+    {
+      "arm": "repeated_sentences",
+      "ci_high": 2.999536,
+      "ci_low": 2.641594,
+      "mean": 2.856456,
+      "metric": "loss_code",
+      "n_seeds": 3
+    },
+    {
+      "arm": "repeated_sentences",
+      "ci_high": 2.629902,
+      "ci_low": 2.516891,
+      "mean": 2.581536,
+      "metric": "loss_forum_qa",
+      "n_seeds": 3
+    },
+    {
+      "arm": "repeated_sentences",
+      "ci_high": 2.634128,
+      "ci_low": 2.514035,
+      "mean": 2.565643,
+      "metric": "loss_news",
+      "n_seeds": 3
+    },
+    {
+      "arm": "repeated_sentences",
+      "ci_high": 2.937444,
+      "ci_low": 2.863637,
+      "mean": 2.906209,
+      "metric": "loss_recipes",
+      "n_seeds": 3
+    },
+    {
+      "arm": "repeated_sentences",
+      "ci_high": 20000.0,
+      "ci_low": 20000.0,
+      "mean": 20000.0,
+      "metric": "train_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "repeated_sentences",
+      "ci_high": 20000.0,
+      "ci_low": 20000.0,
+      "mean": 20000.0,
+      "metric": "unique_content_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "repeated_sentences",
+      "ci_high": 2.741314,
+      "ci_low": 2.633812,
+      "mean": 2.682102,
+      "metric": "validation_loss",
+      "n_seeds": 3
+    },
+    {
+      "arm": "ungated",
+      "ci_high": 1.0,
+      "ci_low": 1.0,
+      "mean": 1.0,
+      "metric": "keep_rate",
+      "n_seeds": 3
+    },
+    {
+      "arm": "ungated",
+      "ci_high": 240.0,
+      "ci_low": 240.0,
+      "mean": 240.0,
+      "metric": "kept_docs",
+      "n_seeds": 3
+    },
+    {
+      "arm": "ungated",
+      "ci_high": 2.999297,
+      "ci_low": 2.640127,
+      "mean": 2.856154,
+      "metric": "loss_code",
+      "n_seeds": 3
+    },
+    {
+      "arm": "ungated",
+      "ci_high": 2.627151,
+      "ci_low": 2.514202,
+      "mean": 2.557716,
+      "metric": "loss_forum_qa",
+      "n_seeds": 3
+    },
+    {
+      "arm": "ungated",
+      "ci_high": 2.644463,
+      "ci_low": 2.550475,
+      "mean": 2.591388,
+      "metric": "loss_news",
+      "n_seeds": 3
+    },
+    {
+      "arm": "ungated",
+      "ci_high": 2.934947,
+      "ci_low": 2.855773,
+      "mean": 2.903655,
+      "metric": "loss_recipes",
+      "n_seeds": 3
+    },
+    {
+      "arm": "ungated",
+      "ci_high": 20000.0,
+      "ci_low": 20000.0,
+      "mean": 20000.0,
+      "metric": "train_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "ungated",
+      "ci_high": 20000.0,
+      "ci_low": 20000.0,
+      "mean": 20000.0,
+      "metric": "unique_content_tokens",
+      "n_seeds": 3
+    },
+    {
+      "arm": "ungated",
+      "ci_high": 2.740745,
+      "ci_low": 2.633961,
+      "mean": 2.682977,
+      "metric": "validation_loss",
+      "n_seeds": 3
+    }
+  ]
+}

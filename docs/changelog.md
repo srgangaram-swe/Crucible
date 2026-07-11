@@ -2,6 +2,24 @@
 
 Format follows [Keep a Changelog](https://keepachangelog.com/); versions follow SemVer.
 
+## [0.9.0] - 2026-07-10 — Phase 8: assay harness + capstone
+
+### Added
+
+- `crucible.assay.harness` (#13): validated YAML experiments as pure functions
+  of config and seed, multi-seed execution, deterministic percentile-bootstrap
+  confidence intervals, and atomic JSON/CSV/Markdown/SVG artifacts identified
+  by config and result content hashes.
+- Four real, offline proxy-language-model studies: equal-compute dedup threshold
+  (#14), held-out domain mixture with leakage-free proxy selection and per-domain
+  losses (#15), quality-gate keep-rate tradeoffs (#16), and total-vs-unique-token
+  power-law fits (#17).
+- `RESULTS.md` and `docs/experiments/` (#18): committed three-seed outputs,
+  reproduction commands, requested literature links, uncertainty, negative
+  results, and explicit small-scale caveats.
+- `crucible assay --config ...`; smoke stage 15 executes all four studies on
+  tiny data and verifies their content-addressed artifacts.
+
 ## [0.8.0] - 2026-07-10 — Phase 7: orchestration + serving
 
 ### Added

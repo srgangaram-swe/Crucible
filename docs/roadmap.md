@@ -77,9 +77,12 @@ tests, docs, and smoke path for that phase are present.
   lineage, runs, and metrics.
 - Streamlit dashboard for catalog, pipeline runs, metrics, and lineage.
 
-## Next
-
 ### Phase 8: Assay Research Harness
 
-- Dedup, quality, mixture, and data-scaling ablations.
-- Reproducible capstone study with configs and measured outputs.
+- Content-addressed, YAML-configured multi-seed harness emitting JSON, CSV,
+  Markdown, and SVG with deterministic bootstrap confidence intervals.
+- Equal-compute dedup, quality, and domain-mixture ablations with held-out
+  proxy-model loss and per-domain breakdowns.
+- Total-token and unique-post-dedup scaling fits with uncertainty estimates.
+- Reproducible capstone with committed configs, measured outputs, negative
+  results, and an offline smoke path for every study.

@@ -9,7 +9,14 @@ from pathlib import Path
 import click
 
 from crucible import __version__
-from crucible.assay import score_dedup, score_gate, sweep_dedup_thresholds
+from crucible.assay import (
+    STUDIES,
+    ExperimentConfig,
+    run_experiment,
+    score_dedup,
+    score_gate,
+    sweep_dedup_thresholds,
+)
 from crucible.assay.scoring import GroundTruthUnavailable
 from crucible.bench import run_bench
 from crucible.config import load_config
@@ -504,6 +511,42 @@ def bench(n_docs: int, seq_len: int, train_steps: int, out_dir: Path) -> None:
     click.echo(
         json.dumps(
             run_bench(n_docs=n_docs, seq_len=seq_len, train_steps=train_steps, out_dir=out_dir),
+            indent=2,
+        )
+    )
+
+
+@main.command()
+@click.option(
+    "--config",
+    "config_path",
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    required=True,
+    help="YAML ExperimentConfig under configs/experiments/.",
+)
+@click.option(
+    "--out",
+    "output_root",
+    type=click.Path(file_okay=False, path_type=Path),
+    default=Path("results/experiments"),
+    show_default=True,
+)
+def assay(config_path: Path, output_root: Path) -> None:
+    """Run a content-addressed, multi-seed data-centric experiment."""
+    cfg = load_config(ExperimentConfig, config_path)
+    study = STUDIES.get(cfg.study)
+    if study is None:
+        raise click.UsageError(f"unknown study {cfg.study!r}; choose from {sorted(STUDIES)}")
+    result = run_experiment(cfg, study, output_root)
+    click.echo(
+        json.dumps(
+            {
+                "study": result.study,
+                "config_hash": result.config_hash,
+                "result_hash": result.result_hash,
+                "artifact_dir": str(result.artifact_dir),
+                "rows": len(result.rows),
+            },
             indent=2,
         )
     )

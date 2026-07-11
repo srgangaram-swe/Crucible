@@ -21,6 +21,8 @@ from typing import Any
 import duckdb
 
 from crucible.assay import score_dedup, score_gate
+from crucible.assay.harness import ExperimentConfig, run_experiment
+from crucible.assay.studies import STUDIES
 from crucible.dedup import DedupConfig, run_dedup
 from crucible.dedup.pipeline import write_dedup_report
 from crucible.features import FeatureStore, source_rollup_features
@@ -282,10 +284,33 @@ def run_smoke(workdir: Path | None = None) -> dict[str, Any]:
     else:
         checks.append("trainer_skipped_no_torch")
 
+    # 15. Assay harness: every registered study runs hermetically and emits
+    # content-addressed reports on a tiny single-seed configuration.
+    assay_hashes: dict[str, str] = {}
+    for study_name, study in STUDIES.items():
+        parameters = {"token_scales": [1000, 2000, 3000]} if study_name == "scaling_law" else {}
+        experiment = run_experiment(
+            ExperimentConfig(
+                study=study_name,
+                seeds=[7],
+                n_docs=80,
+                train_tokens=2000,
+                bootstrap_samples=100,
+                parameters=parameters,
+            ),
+            study,
+            workdir / "assay",
+        )
+        _check(
+            (experiment.artifact_dir / "results.json").is_file(), f"{study_name} emitted no results"
+        )
+        assay_hashes[study_name] = experiment.result_hash
+    checks.append("assay_four_studies_content_addressed")
+
     report = generation_report(_SMOKE_CONFIG, records)
     return {
         "ok": True,
-        "phase": 7,
+        "phase": 8,
         "checks_passed": checks,
         "elapsed_s": round(time.perf_counter() - started, 3),
         "corpus_sha256": digest,
@@ -319,5 +344,6 @@ def run_smoke(workdir: Path | None = None) -> dict[str, Any]:
             "vocab_size": shard_result.vocab_size,
         },
         "train": train_report,
+        "assay": assay_hashes,
         "generation": report,
     }

@@ -1,0 +1,7 @@
+study: scaling_law
+seeds: [11, 23, 37]
+n_docs: 240
+train_tokens: 200000
+bootstrap_samples: 1000
+parameters:
+  token_scales: [20000, 50000, 100000, 200000]
