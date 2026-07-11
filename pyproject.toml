@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "crucible-data"
-version = "0.7.0"
+version = "0.8.0"
 description = "Crucible: a local-first data refinery and data-centric research platform for distributed training."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -38,7 +38,7 @@ hf = ["datasets>=2.16"]
 quality = ["pandas>=2.1", "pandera>=0.18"]
 dedup = ["datasketch>=1.6"]
 train = ["torch>=2.2"]
-serve = ["fastapi>=0.109", "uvicorn>=0.27", "streamlit>=1.30"]
+serve = ["fastapi>=0.109", "httpx2>=0.1", "uvicorn>=0.27", "streamlit>=1.30"]
 all = ["crucible-data[stream,hf,quality,dedup,train,serve]"]
 dev = [
     "black>=24.1",
@@ -50,7 +50,7 @@ dev = [
     "types-PyYAML",
     # quality + dedup extras included so the pandera bridge and datasketch
     # backend are tested, not decorative
-    "crucible-data[quality,dedup]",
+    "crucible-data[quality,dedup,serve]",
 ]
 
 [project.scripts]
@@ -106,6 +106,10 @@ implicit_reexport = true
 
 [[tool.mypy.overrides]]
 module = ["confluent_kafka.*", "datasets.*", "datasketch.*", "torch.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["streamlit.*"]
 ignore_missing_imports = true
 
 # In torch-free environments nn.Module resolves to Any (see the override

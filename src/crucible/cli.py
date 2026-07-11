@@ -24,6 +24,8 @@ from crucible.ingest import (
     replay_jsonl,
 )
 from crucible.lineage import LineageGraph
+from crucible.observability import MetricsStore
+from crucible.orchestrate import list_runs, run_pipeline
 from crucible.quality import QualityConfig, drift_report, run_gate, write_report
 from crucible.quality.drift import profile_table
 from crucible.smoke import SmokeFailure, run_smoke
@@ -415,6 +417,75 @@ def drift(dataset: str, against: str, layer: str, root: Path) -> None:
     reference = profile_table(cat.read(Layer(layer), dataset))
     current = profile_table(cat.read(Layer(layer), against))
     click.echo(json.dumps(drift_report(reference, current), indent=2))
+
+
+@main.command()
+@click.option("--dataset", required=True, help="Bronze dataset to process.")
+@click.option(
+    "--root",
+    type=click.Path(file_okay=False, path_type=Path),
+    default=Path("data/crucible"),
+    show_default=True,
+)
+@click.option("--quality-config", type=click.Path(exists=True, dir_okay=False, path_type=Path))
+@click.option("--dedup-config", type=click.Path(exists=True, dir_okay=False, path_type=Path))
+@click.option(
+    "--force", is_flag=True, help="Run even when this input/config fingerprint completed."
+)
+def orchestrate(
+    dataset: str,
+    root: Path,
+    quality_config: Path | None,
+    dedup_config: Path | None,
+    force: bool,
+) -> None:
+    """Run the idempotent promote -> dedup DAG with retries and metrics."""
+    result = run_pipeline(
+        root,
+        dataset,
+        load_config(QualityConfig, quality_config),
+        load_config(DedupConfig, dedup_config),
+        force=force,
+    )
+    click.echo(json.dumps(result.as_dict(), indent=2))
+
+
+@main.command(name="runs")
+@click.option(
+    "--root", type=click.Path(file_okay=False, path_type=Path), default=Path("data/crucible")
+)
+@click.option("--limit", type=click.IntRange(1, 1000), default=100, show_default=True)
+def runs_cmd(root: Path, limit: int) -> None:
+    """List durable orchestration run records."""
+    click.echo(json.dumps(list_runs(root, limit), indent=2))
+
+
+@main.command(name="metrics")
+@click.option(
+    "--root", type=click.Path(file_okay=False, path_type=Path), default=Path("data/crucible")
+)
+@click.option("--run-id", default=None)
+@click.option("--limit", type=click.IntRange(1, 1000), default=100, show_default=True)
+def metrics_cmd(root: Path, run_id: str | None, limit: int) -> None:
+    """List stage duration and throughput metrics."""
+    click.echo(json.dumps(MetricsStore(root).list(run_id=run_id, limit=limit), indent=2))
+
+
+@main.command()
+@click.option(
+    "--root", type=click.Path(file_okay=False, path_type=Path), default=Path("data/crucible")
+)
+@click.option("--host", default="127.0.0.1", show_default=True)
+@click.option("--port", type=click.IntRange(1, 65535), default=8000, show_default=True)
+def serve(root: Path, host: str, port: int) -> None:
+    """Serve the read-only metadata API (requires the serve extra)."""
+    try:
+        import uvicorn
+
+        from crucible.serve import create_app
+    except (ImportError, RuntimeError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    uvicorn.run(create_app(root), host=host, port=port)
 
 
 @main.command()

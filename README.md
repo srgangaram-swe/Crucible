@@ -33,9 +33,9 @@ refinement, and the `assay` experiment harness measures the purity of what comes
 
 ## Status
 
-**Phase 6 of 8** - ingestion, the quality gate, deduplication, versioning/lineage, the
+**Phase 7 of 8** - ingestion, the quality gate, deduplication, versioning/lineage, the
 point-in-time feature layer, and the training path (deterministic shards + CPU/DDP/FSDP
-reference trainer with exact checkpoint resume) are shipped. Measured on a laptop CPU
+reference trainer with exact checkpoint resume), and the orchestration/metadata control plane are shipped. Measured on a laptop CPU
 (see benchmarks/): shard build 5.2M tokens/s, shard read 7.6M tokens/s, trainer ~168k
 tokens/s with loss 5.72→2.78 over 30 steps. The pipeline runs synthetic data → bronze (batch or streamed) → quality gate →
 silver + quarantine → exact + MinHash/LSH dedup, with every stage scored against planted
@@ -55,7 +55,7 @@ is planned.
 | 4 | Content-addressed manifests, verifiable version snapshots, lineage graph | done |
 | 5 | Feature layer with point-in-time joins, leakage guards, offline/online parity | done |
 | 6 | Deterministic training shards, resumable reader, CPU/DDP/FSDP reference trainer, benchmarks | done |
-| 7 | Orchestration DAG, FastAPI service, Streamlit dashboard | planned |
+| 7 | Idempotent orchestration DAG, metrics, FastAPI service, Streamlit dashboard | done |
 | 8 | Research harness + capstone data-centric study + docs | planned |
 
 ## Quickstart
@@ -117,6 +117,17 @@ Every stage recorded lineage and version snapshots as it ran:
 .venv/bin/crucible lineage --dataset silver/synth    # what fed this dataset?
 .venv/bin/crucible versions --dataset synth          # snapshots: (config, inputs, code, output)
 .venv/bin/crucible verify-snapshot --dataset synth   # do the bytes still match the pin?
+```
+
+Run the ordered, retryable pipeline. A repeated invocation with identical bronze
+content and configs is a durable no-op; `--force` opts into a new run:
+
+```bash
+.venv/bin/crucible orchestrate --dataset synth
+.venv/bin/crucible runs
+.venv/bin/crucible metrics
+.venv/bin/crucible serve                              # install .[serve]
+.venv/bin/streamlit run src/crucible/dashboard.py    # local control-plane UI
 ```
 
 ## Design principles

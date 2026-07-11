@@ -62,8 +62,6 @@ tests, docs, and smoke path for that phase are present.
 - Offline/online parity: `get_latest` equals the PIT join at t = infinity.
 - Cumulative source-rollup demo features, PIT-joined in every smoke run.
 
-## Next
-
 ### Phase 6: Training Shards and Reference Trainer
 
 - Tokenization and deterministic shard building.
@@ -72,9 +70,14 @@ tests, docs, and smoke path for that phase are present.
 
 ### Phase 7: Orchestration and Serving
 
-- Idempotent DAG runner.
-- FastAPI metadata service.
-- Streamlit dashboard for catalog, quality, lineage, and run reports.
+- Typed, dependency-validated DAG runner with durable state, bounded retries,
+  promote-before-dedup ordering, and input/config fingerprint idempotency.
+- Append-only stage duration, row-count, retry, failure, and throughput metrics.
+- Versioned, read-only FastAPI metadata service for catalog, reports, versions,
+  lineage, runs, and metrics.
+- Streamlit dashboard for catalog, pipeline runs, metrics, and lineage.
+
+## Next
 
 ### Phase 8: Assay Research Harness
 

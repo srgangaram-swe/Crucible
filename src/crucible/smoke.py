@@ -6,7 +6,7 @@ equivalence) -> quality gate to silver + quarantine with measured
 precision/recall vs planted defects -> PSI drift detection -> exact +
 MinHash/LSH dedup with measured scores -> lineage graph, version
 snapshots, snapshot verification, and a byte-identical rebuild of silver
-in a fresh catalog. Later phases extend this to shard -> train; ``make
+in a fresh catalog, orchestration state, and stage metrics. Later phases extend this to shard -> train; ``make
 smoke`` must always exercise everything that exists so far, on CPU, with
 no external services, in about a minute.
 """
@@ -26,6 +26,8 @@ from crucible.dedup.pipeline import write_dedup_report
 from crucible.features import FeatureStore, source_rollup_features
 from crucible.ingest import InMemoryBroker, JsonlSource, StreamSource, land, replay_jsonl
 from crucible.lineage import LineageGraph
+from crucible.observability import MetricsStore
+from crucible.orchestrate import run_pipeline
 from crucible.quality import QualityConfig, drift_report, run_gate, write_report
 from crucible.quality.drift import profile_table
 from crucible.shards import ShardConfig, ShardReader, build_shards
@@ -209,12 +211,20 @@ def run_smoke(workdir: Path | None = None) -> dict[str, Any]:
     # must rebuild byte-identical silver content.
     rebuild = Catalog(workdir / "catalog_rebuild")
     land(JsonlSource(jsonl_path, batch_size=97), rebuild, "synth", "smoke-batch")
-    run_gate(rebuild, "synth", gate_cfg)
-    run_dedup(rebuild, "synth", DedupConfig())
+    orchestrated = run_pipeline(rebuild.root, "synth", gate_cfg, DedupConfig())
+    _check(orchestrated.status == "complete", "orchestrated rebuild did not complete")
+    skipped = run_pipeline(rebuild.root, "synth", gate_cfg, DedupConfig())
+    _check(skipped.status == "skipped", "orchestration fingerprint was not idempotent")
+    metrics = MetricsStore(rebuild.root).list(run_id=orchestrated.run_id)
+    _check(
+        [metric["stage"] for metric in metrics] == ["promote", "dedup"],
+        "orchestration stage metrics are incomplete",
+    )
     original_hash = build_manifest(catalog, Layer.SILVER, "synth").content_hash
     rebuilt_hash = build_manifest(rebuild, Layer.SILVER, "synth").content_hash
     _check(original_hash == rebuilt_hash, "rebuild produced different silver content")
     checks.append("byte_identical_rebuild")
+    checks.append("orchestration_idempotent_observable")
 
     # 12. Feature layer: PIT-correct join over cumulative source rollups.
     # assert_no_leakage runs inside the join; a leak raises immediately.
@@ -275,7 +285,7 @@ def run_smoke(workdir: Path | None = None) -> dict[str, Any]:
     report = generation_report(_SMOKE_CONFIG, records)
     return {
         "ok": True,
-        "phase": 5,
+        "phase": 7,
         "checks_passed": checks,
         "elapsed_s": round(time.perf_counter() - started, 3),
         "corpus_sha256": digest,
