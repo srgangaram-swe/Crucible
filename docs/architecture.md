@@ -1,10 +1,10 @@
 # Architecture
 
-> Status: Phase 7. Bronze ingestion, medallion storage, DuckDB catalog views, the quality
+> Status: Phase 8. Bronze ingestion, medallion storage, DuckDB catalog views, the quality
 > gate (bronze→silver with quarantine), PSI drift detection, exact + MinHash/LSH dedup,
 > ground-truth scoring of both stages, content-addressed version snapshots, the lineage
 > graph, point-in-time feature layer, training path, and orchestration/serving control plane
-> are shipped, all exercised by the offline
+> and content-addressed multi-seed research harness are shipped, all exercised by the offline
 > smoke path (including a byte-identical rebuild check and a leak-checked PIT join).
 > Sections for unbuilt subsystems are design intent, not documentation of shipped code;
 > see [roadmap.md](roadmap.md) for phase status.
@@ -99,4 +99,5 @@ flowchart LR
 | `crucible.observability` | 7 | Append-only stage timing, throughput, retry, and failure metrics |
 | `crucible.orchestrate` | 7 | Typed DAG runner, durable runs, retries, fingerprint idempotency |
 | `crucible.serve` / `dashboard` | 7 | Read-only FastAPI metadata API and Streamlit dashboard |
-| `crucible.assay` | 8 | Experiment harness + capstone study |
+| `crucible.assay.harness` | 8 | Multi-seed execution, bootstrap CIs, content-addressed reports |
+| `crucible.assay.studies` | 8 | Dedup, mixture, quality, and scaling experiments |

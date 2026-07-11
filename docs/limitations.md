@@ -11,6 +11,11 @@ a large-scale study. Specifically:
   numbers do not transfer to natural corpora; treat trends, not magnitudes, as the finding.
 - **Models.** The reference trainer uses a deliberately small transformer. Research results
   are about *data* effects at small scale; extrapolation to frontier scale is not claimed.
+- **Phase 8 evaluator.** The committed ablations use a Laplace-smoothed byte-bigram proxy
+  model to keep multi-seed studies deterministic, offline, and CI-sized. Its held-out
+  cross-entropy is a real downstream measurement but is not a substitute for transformer
+  pretraining. Three-seed bootstrap intervals describe these runs; they do not establish
+  population-level uncertainty or external validity.
 - **Measured vs illustrative numbers.** Any number in docs or reports is either (a) produced
   by a committed, seed-controlled run whose config is referenced next to it, or (b) explicitly
   labeled "illustrative". Nothing in between — benchmark numbers are never fabricated.

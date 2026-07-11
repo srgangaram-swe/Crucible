@@ -33,9 +33,11 @@ refinement, and the `assay` experiment harness measures the purity of what comes
 
 ## Status
 
-**Phase 7 of 8** - ingestion, the quality gate, deduplication, versioning/lineage, the
+**Phase 8 of 8** - the complete local-first data refinery and research harness is shipped:
+ingestion, the quality gate, deduplication, versioning/lineage, the
 point-in-time feature layer, and the training path (deterministic shards + CPU/DDP/FSDP
-reference trainer with exact checkpoint resume), and the orchestration/metadata control plane are shipped. Measured on a laptop CPU
+reference trainer with exact checkpoint resume), the orchestration/metadata control plane,
+and four content-addressed multi-seed data ablations. Measured on a laptop CPU
 (see benchmarks/): shard build 5.2M tokens/s, shard read 7.6M tokens/s, trainer ~168k
 tokens/s with loss 5.72→2.78 over 30 steps. The pipeline runs synthetic data → bronze (batch or streamed) → quality gate →
 silver + quarantine → exact + MinHash/LSH dedup, with every stage scored against planted
@@ -56,7 +58,7 @@ is planned.
 | 5 | Feature layer with point-in-time joins, leakage guards, offline/online parity | done |
 | 6 | Deterministic training shards, resumable reader, CPU/DDP/FSDP reference trainer, benchmarks | done |
 | 7 | Idempotent orchestration DAG, metrics, FastAPI service, Streamlit dashboard | done |
-| 8 | Research harness + capstone data-centric study + docs | planned |
+| 8 | Research harness + capstone data-centric study + docs | done |
 
 ## Quickstart
 
@@ -129,6 +131,17 @@ content and configs is a durable no-op; `--force` opts into a new run:
 .venv/bin/crucible serve                              # install .[serve]
 .venv/bin/streamlit run src/crucible/dashboard.py    # local control-plane UI
 ```
+
+Reproduce the Phase 8 capstone studies and their bootstrap confidence intervals:
+
+```bash
+for config in configs/experiments/*.yaml; do
+  .venv/bin/crucible assay --config "$config"
+done
+```
+
+See [RESULTS.md](RESULTS.md) for measured findings, negative results, caveats,
+config hashes, result hashes, and links to each committed artifact.
 
 ## Design principles
 

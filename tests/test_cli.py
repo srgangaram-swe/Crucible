@@ -13,6 +13,34 @@ def test_version() -> None:
     assert __version__ in result.output
 
 
+def test_assay_cli_writes_reproducible_artifacts(tmp_path: Path) -> None:
+    config = tmp_path / "experiment.yaml"
+    config.write_text(
+        "study: quality_ablation\nseeds: [5]\nn_docs: 80\ntrain_tokens: 2000\n"
+        "bootstrap_samples: 100\n"
+    )
+    out = tmp_path / "results"
+    runner = CliRunner()
+    first = runner.invoke(main, ["assay", "--config", str(config), "--out", str(out)])
+    second = runner.invoke(main, ["assay", "--config", str(config), "--out", str(out)])
+    assert first.exit_code == 0, first.output
+    assert json.loads(first.output) == json.loads(second.output)
+    payload = json.loads(first.output)
+    artifact_dir = Path(payload["artifact_dir"])
+    assert artifact_dir.parts[-2:] == (payload["config_hash"], payload["result_hash"])
+    assert (artifact_dir / "results.json").is_file()
+
+
+def test_assay_cli_rejects_unknown_study(tmp_path: Path) -> None:
+    config = tmp_path / "experiment.yaml"
+    config.write_text(
+        "study: unknown\nseeds: [5]\nn_docs: 80\ntrain_tokens: 2000\nbootstrap_samples: 100\n"
+    )
+    result = CliRunner().invoke(main, ["assay", "--config", str(config)])
+    assert result.exit_code == 2
+    assert "unknown study" in result.output
+
+
 def test_synth_writes_outputs(tmp_path: Path) -> None:
     out = tmp_path / "raw"
     result = CliRunner().invoke(main, ["synth", "--out", str(out), "--n-docs", "50", "--seed", "9"])
